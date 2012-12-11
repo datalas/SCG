@@ -78,7 +78,7 @@ draw: function(){
 		var percentage = parseInt((slice/total) * 100) + '%';
 
 		var sector = this.sector( this.chart.center, this.chart.middle, outer.outer + 15, starting_angle, starting_angle + angle, { 'fill': '#505050', 'stroke-width': 5, 'fill-opacity': 0.1, 'stroke': '#ffffff'  } );
-		var sector = this.sector( this.chart.center, this.chart.middle, inner.radius, starting_angle, starting_angle + angle, { 'fill': this.colours[ index ], 'stroke-width': 0, 'opacity': 0.7  } );
+		var sector = this.sector( this.chart.center, this.chart.middle, inner.radius, starting_angle, starting_angle + angle, { 'fill': this.colours[ index ], 'stroke-width': 0, 'opacity': 0.8  } );
 
 		sector.percentage = percentage;
 		var arc = this.arc( this.chart.center, this.chart.middle, outer, starting_angle, angle, detail, index);
@@ -115,27 +115,32 @@ draw: function(){
 		var highlight = function(){
 			var sector = this.sectors[ label.label ];
 			sector.attr({'opacity': 1, 'stroke-width': 1, 'stroke': '#505050' });
-			sector._percent = this.paper.text( sector.center.x, sector.center.y, sector.percentage ).attr({'fill': '#ffffff', 'font-size': 30});
+			sector._percent = this.paper.text( sector.center.x, sector.center.y, sector.percentage ).attr({'fill': '#ffffff', 'font-size': 20}).scale( 1.5,1.5,x,y);;
 			sector.scale( 1.5, 1.5, x, y );
 			arcs.each( function( arc ){
 				arc.scale( 1.5, 1.5, x,y );
 				arc.attr({'opacity': 1, 'stroke-width': 1, 'stroke': '#505050' });
 				this.rightLabels[ arc.label ].blob.attr( { 'fill-opacity': 1 } );
-				this.rightLabels[ arc.label ].blob.scale(2,2);
+				this.rightLabels[ arc.label ].blob.scale(3/2,3/2);
 				this.rightLabels[ arc.label ].text.attr( { 'font-weight': 'bold' } );
+				/* add the percentage */
+				var offsetX = this.rightLabels[ arc.label ].text.getBBox().x2;
+				var offsetY = this.rightLabels[ arc.label ].text.getBBox().y + (this.rightLabels[ arc.label ].text.getBBox().height / 2);
+				arc.__percent = this.paper.text( offsetX + 15, offsetY, arc.percentage ).attr({ 'text-anchor' : 'start'});
 			}, this );
 		};
 		var resethighlight = function(){
 			var sector = this.sectors[ label.label ];
 			sector.scale( 2/3, 2/3, x, y );
-			sector.attr({'opacity': 0.7, 'stroke-width': 0 });
+			sector.attr({'opacity': 0.8, 'stroke-width': 0 });
 			sector._percent.remove();
 			arcs.each( function( arc ){
 				arc.scale( 2/3, 2/3, x,y );
 				arc.attr({'opacity': 0.7, 'stroke-width': 0, 'stroke': '#505050' });
-				this.rightLabels[ arc.label ].blob.scale(0.5,0.5);
+				this.rightLabels[ arc.label ].blob.scale(2/3,2/3);
 				this.rightLabels[ arc.label ].blob.attr( { 'fill-opacity': 0.4 } );
 				this.rightLabels[ arc.label ].text.attr( { 'font-weight': 'normal' } );
+				arc.__percent.remove();
 			}, this );
 		};
 		label.coords = {
@@ -228,6 +233,8 @@ arc: function( cx, cy, radius, start, arcLength, data, index, params  ){
 		}
 
 		arc.label = this.options.labels[index][1][pointnumber];
+		arc.percentage = parseInt( (point/total) * 100) + '%';
+
 		arcs.push( arc );
 	}, this );
 
