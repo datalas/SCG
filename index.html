@@ -1,0 +1,250 @@
+<!DOCTYPE html PUBLIC "-//W3c//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml11/DTD/xhmtml11-strict.dtd">
+<html>
+<head>
+	<script src="mootools.js" tpe="text/javascript"></script>
+	<script src="mootools-more.js" tpe="text/javascript"></script>
+	<script src="raphael.js" tpe="text/javascript"></script>
+	<script src="src/chart.js" tpe="text/javascript"></script>
+	<script src="src/barchart.js" tpe="text/javascript"></script>
+	<script src="src/linechart.js" tpe="text/javascript"></script>
+	<script src="src/piechart.js" tpe="text/javascript"></script>
+	<script src="src/heatchart.js" tpe="text/javascript"></script>
+	<script src="src/heatradar.js" tpe="text/javascript"></script>
+	<script src="src/piearc.js" tpe="text/javascript"></script>
+	<script src="src/radar.js" tpe="text/javascript"></script>
+	<title>Testy</title>
+</head>
+<body>
+	<h3>Standard Line Chart</h3>
+	<div id='test'></div>
+	<h3>Multi Line - Line Chart</h3>
+	<div id='test1'></div>
+	<h3>Bar Chart</h3>
+	<div id='test2'></div>
+	<h3>Bar Chart (with negative numbers)</h3>
+	<div id='test3'></div>
+	<h3>Stacked Bar Chart</h3>
+	<div id='test4'></div>
+	<h3>Stacked Bar Chart (with negative numbers)</h3>
+	<div id='test5'></div>
+	<h3>Heat Chart</h3>
+	<div id='test6'></div>
+	<h3>Radar</h3>
+	<div id='test7'></div>
+	<h3>Heat Radar</h3>
+	<div id='test8'></div>
+	<h3>Pie Chart</h3>
+	<div id='test9'></div>
+	<h3>Pie Arc</h3>
+	<div id='test10'></div>
+<script>
+window.addEvent( 'domready', function(){
+
+	new SCGLinechart( 'test', {
+		yaxis: 'thingies',
+		//data: [ 10, 20, 30, 14, 19, 47, 139, 233, 123 ],
+		data: [ 10, -20, 30, -14, 19, 47, 139, 233, -123 ],
+		labels: [ 'label1', 'label2', 'label3', 'label4', 'label5', 'label6', 'label7', 'label8', 'label9' ]
+	}); 
+
+	new SCGBarchart( 'test2', {
+		yaxis: 'thingies',
+		data: [ 10, 20, 30, 14, 19, 47, 139, 233, 123 ],
+		labels: [ 'label1', 'label2', 'label3', 'label4', 'label5', 'label6', 'label7', 'label8', 'label9' ]
+	});
+
+	new SCGBarchart( 'test3', {
+		yaxis: 'thingies',
+		data: [ 10, -20, 30, -14, 19, 47, 139, 233, 123, 55, -2, 73, 18, 45, 22, 100, 28, 156 ],
+		labels: [ 'label1', 'label2', 'label3', 'label4', 'label5', 'label6', 'label7', 'label8', 'label9', 'label10', 'label11', 'label12', 'label13', 'label14', 'label15', 'label16', 'label17', 'label18' ]
+	});
+
+	new SCGLinechart( 'test1', {
+		yaxis: 'thingies',
+		data: [ 
+			[ 10, 26, 15  ],
+			[ 20, 23, 14  ],
+			[ 30, 7, 62   ],
+			[ 14, 12, 8  ],
+			[ 19, 36, 73  ],
+			[ 47, 5, 125   ],
+			[ 139, 17, 30 ],
+			[ 233, 0, 14  ],
+			[ 123, 179, 20 ]
+		],
+		labels: [ 'label1', 'label2', 'label3', 'label4', 'label5', 'label6', 'label7', 'label8', 'label9' ]
+	}); 
+
+
+	new SCGBarchart( 'test4', {
+		yaxis: 'thingies',
+		data: [ 
+			[ 10, 26, 15  ],
+			[ 20, 23, 14  ],
+			[ 30, 7, 62   ],
+			[ 14, 12, 8  ],
+			[ 19, 36, 73  ],
+			[ 47, 5, 125   ],
+			[ 139, 17, 30 ],
+			[ 233, 0, 14  ],
+			[ 123, 179, 20 ]
+		],
+		labels: [ 'label1', 'label2', 'label3', 'label4', 'label5', 'label6', 'label7', 'label8', 'label9' ],
+		xaxis: [ 'Axis1', 'Axis2','Axis3','Axis4','Axis5','Axis6','Axis7','Axis8','Axis9' ]
+	});  
+
+	new SCGBarchart( 'test5', {
+		yaxis: 'thingies',
+		invertNegative: 1,
+		data: [ 
+			[ 10, -26  ],
+			[ 20, -23  ],
+			[ 30, -7   ],
+			[ 14, -12  ],
+			[ 19, -36  ],
+			[ 47, -5   ],
+			[ 139, -17 ],
+			[ 233, -0  ],
+			[ 123, -179 ]
+		],
+		labels: [ 'label1', 'label2', 'label3', 'label4', 'label5', 'label6', 'label7', 'label8', 'label9' ],
+		xaxis: [ 'Axis1', 'Axis2','Axis3','Axis4','Axis5','Axis6','Axis7','Axis8','Axis9' ]
+	});  
+
+
+	new SCGHeatchart( 'test6', {
+		gutter: {
+			top: 60,
+			left: 120,
+			right: 10,
+			bottom: 30
+		},
+		data: [ 
+			/* M  T  W  T  F  S  S */
+			/* 0  */ [  0,  2,  1,  1,  2,  0,  0 ],
+			/* 1  */ [  1,  3,  1,  2,  1,  5,  6 ],
+			/* 2  */ [  2,  2,  1,  2,  2,  0,  0 ],
+			/* 3  */ [  5,  1,  2,  1,  2,  1,  0 ],
+			/* 4  */ [  1,  1,  1,  1,  1,  0,  0 ],
+			/* 5  */ [  0,  1,  1,  0,  1,  0,  0 ],
+			/* 6  */ [  0,  0,  0,  1,  0,  0,  0 ],
+			/* 7  */ [  0,  1,  0,  1,  1,  0,  0 ],
+			/* 8  */ [  4,  3,  2,  5,  3,  0,  0 ],
+			/* 9  */ [  9,  8,  7,  9,  6,  0,  0 ],
+			/* 10 */ [  15, 12,  16,  10, 11,  0,  0 ],
+			/* 11 */ [  9,  12,  18,  20,  9,  0,  0 ],
+			/* 12 */ [  30,  26,  39,  27,  28,  0,  0 ],
+			/* 13 */ [  15,  18,  14,  12,  10,  0,  0 ],
+			/* 14 */ [  12,  10,  12,  13,  10,  0,  0 ],
+			/* 15 */ [  10,  11,  12,  10,  7,  0,  0 ],
+			/* 16 */ [  9,  7,  9,  9,  4,  0,  0 ],
+			/* 17 */ [  8,  6,  7,  8,  3,  0,  0 ],
+			/* 18 */ [  13,  3,  3,  4,  2,  0,  0 ],
+			/* 19 */ [  2,  2,  2,  2,  1,  0,  0 ],
+			/* 20 */ [  3,  2,  2,  6,  37,  0,  0 ],
+			/* 21 */ [  2,  1,  0,  2,  1,  0,  0 ],
+			/* 22 */ [  4,  2,  2,  3,  1,  0,  0 ],
+			/* 23 */ [  1,  1,  1,  0,  1,  0,  0 ],
+		],
+		labels: [ 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday' ]
+	});
+
+
+	new SCGRadar( 'test7', {
+		gutter: {
+			top: 30,
+			left: 60,
+			right: 30,
+			bottom: 30
+		},
+		data: [ 
+			/* M  T  W  T  F  S  S */
+			/* 0  */ [  0,  2,  1,  1,  2,  0,  0 ],
+			/* 1  */ [  1,  3,  1,  2,  1,  5,  6 ],
+			/* 2  */ [  2,  2,  1,  2,  2,  0,  0 ],
+			/* 3  */ [  5,  1,  2,  1,  2,  1,  0 ],
+			/* 4  */ [  1,  1,  1,  1,  1,  0,  0 ],
+			/* 5  */ [  0,  1,  1,  0,  1,  0,  0 ],
+			/* 6  */ [  0,  0,  0,  1,  0,  0,  0 ],
+			/* 7  */ [  0,  1,  0,  1,  1,  0,  0 ],
+			/* 8  */ [  4,  3,  2,  5,  3,  0,  0 ],
+			/* 9  */ [  9,  8,  7,  9,  6,  0,  0 ],
+			/* 10 */ [  15, 12,  16,  10, 11,  0,  0 ],
+			/* 11 */ [  9,  12,  18,  20,  9,  0,  0 ],
+			/* 12 */ [  30,  26,  39,  27,  28,  0,  0 ],
+			/* 13 */ [  15,  18,  14,  12,  10,  0,  0 ],
+			/* 14 */ [  12,  10,  12,  13,  10,  0,  0 ],
+			/* 15 */ [  10,  11,  12,  10,  7,  0,  0 ],
+			/* 16 */ [  9,  7,  9,  9,  4,  0,  0 ],
+			/* 17 */ [  8,  6,  7,  8,  3,  0,  0 ],
+			/* 18 */ [  13,  3,  3,  4,  2,  0,  0 ],
+			/* 19 */ [  2,  2,  2,  2,  1,  0,  0 ],
+			/* 20 */ [  3,  2,  2,  6,  37,  0,  0 ],
+			/* 21 */ [  2,  1,  0,  2,  1,  0,  0 ],
+			/* 22 */ [  4,  2,  2,  3,  1,  0,  0 ],
+			/* 23 */ [  1,  1,  1,  0,  1,  0,  0 ],
+		],
+		labels: [ 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday' ]
+	});
+
+	new SCGHeatRadar( 'test8', {
+		gutter: {
+			top: 30,
+			left: 60,
+			right: 30,
+			bottom: 30
+		},
+		data: [ 
+			[ 0, 1, 3, 1, 1, 5, 2, 3, 12, 14, 15, 14 ],
+			[ 27, 4, 3, 6, 1, 8, 2, 1, 2, 4, 1, 2 ],
+		],
+		labels: [ 'AM', 'PM' ]
+	});
+
+	new SCGPiechart( 'test9', {
+		data: [ 10, 20, 30, 14, 19, 47, 91 ],
+		labels: [ 'label1', 'label2', 'label3', 'label4', 'label5', 'label6', 'label7' ]
+	});
+
+	new SCGPieArc( 'test10', {
+		height: 400,
+		gutter: {
+			top: 100,
+			left: 60,
+			right: 30,
+			bottom: 100
+		},
+		data: [ 
+			[1,  [3,5,1,2,3]],
+			[3,  [9,7,5,6,7]],
+			[1,  [2,4,7,9,3]],
+			[5,  [2,7,2,5,3]],
+			[2,  [4,5,8,3,5]],
+			[3,  [2,2,6,7,4]],
+			[12, [6,7,3,4,5]],
+			[14, [5,3,2,4,3]],
+			[15, [1,2,4,6,5]],
+			[14, [11,2,3,5,6]]
+		],
+		labels: [
+			[ 'Bertie', [ 'a', 'b', 'c', 'd', 'e' ] ],
+			[ 'Jeff',   [ 'a', 'b', 'c', 'd', 'e' ] ],
+			[ 'Bill',   [ 'c', 'b', 'a', 'f', 'e' ] ],
+			[ 'Fred',   [ 'a', 'b', 'c', 'd', 'e' ] ],
+			[ 'Ernie',  [ 'a', 'b', 'c', 'd', 'e' ] ],
+			[ 'Dorris', [ 'g', 'b', 'c', 'd', 'e' ] ],
+			[ 'Henry',  [ 'a', 'b', 'c', 'd', 'e' ] ],
+			[ 'Norris', [ 'f', 'e', 'c', 'd', 'b' ] ],
+			[ 'Edward', [ 'a', 'f', 'c', 'e', 'd' ] ],
+			[ 'Derek',  [ 'c', 'e', 'a', 'd', 'f' ] ]
+		]
+	});
+
+
+
+} );
+
+</script>
+
+</body>
+</html>
