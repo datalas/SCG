@@ -23,7 +23,7 @@
 
 var SCGPieArc = new Class({
 Implements: [ Events, Options ],
-Extends: SCGChart,
+Extends: SCGPiechart,
 initialize: function( obj, options ){
 	this.parent( obj, options);
 	this.element = $(obj);
@@ -175,23 +175,6 @@ draw: function(){
 	this.frameKey( this.chart.center, this.chart.middle, outer.outer + 5, rightKey.left, rightKey.top, rightKey.height, rightKey.width, 1 );
 	this.frameKey( this.chart.center, this.chart.middle, outer.outer + 5, leftKey.left, leftKey.top, leftKey.height, leftKey.width, -1 );
 
-},
-sector: function(cx, cy, r, startAngle, endAngle, params ) {
-	var rad = Math.PI / 180;
-	var midAngle = startAngle + ( (endAngle-startAngle)/2 );
-	var x1 = cx + r * Math.cos(-startAngle * rad),
-	x2 = cx + r * Math.cos(-endAngle * rad),
-	y1 = cy + r * Math.sin(-startAngle * rad),
-	y2 = cy + r * Math.sin(-endAngle * rad),
-	xCen = cx + (r/2) * Math.cos(-midAngle * rad),
-	yCen = cy + (r/2) * Math.sin(-midAngle * rad);
-
-	var path = this.paper.path(["M", cx, cy, "L", x1, y1, "A", r, r, 0, +(endAngle - startAngle > 180), 0, x2, y2, "z"]).attr(params);
-	path.center = {
-		x: xCen,
-		y: yCen
-	};
-	return path;
 },
 arc: function( cx, cy, radius, start, arcLength, data, index, params  ){
 	/* how long is our arc ?  this will give us the scale for each point */
