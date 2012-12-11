@@ -203,7 +203,7 @@ setRange: function()
 		this.options.data.each( function( point ){
 			var h = 0;
 			var l = 0;
-			point.each( function( p ){
+			Array.each( point, function( p ){
 				if ( p > 0 ){
 					h += p;
 				} else {

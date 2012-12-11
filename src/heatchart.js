@@ -43,7 +43,7 @@ drawHeatGrid: function(){
 
 	var max = 0;
 	this.options.data.each( function( child ){
-		max = Math.max( child.max(), max );
+		max = Math.max( Array.max( child ), max );
 	}, this );
 	this.max = max;
 	
@@ -60,7 +60,7 @@ drawHeatGrid: function(){
 		}
 
 		this.options.data.each( function( datapoint, pointNumber ){
-			datapoint.each( function( line, lineNumber ){
+			Array.each( datapoint, function( line, lineNumber ){
 				var colour = this.getColour( line );
 				var fillcolour = colour;
 				if ( colours[ lineNumber ] && colours[ lineNumber ][ pointNumber - 1 ] ){
@@ -85,10 +85,10 @@ drawHeatGrid: function(){
 		}
 			
 		for ( var i = 1; i <= this.options.data.length; i++ ){
-			if ( i % ( this.options.data.length / this.options.ypoints ) == 0 ){
-				this.paper.text( this.chart.left + ( i * pointWidth ), this.chart.bottom + 10, (i/this.options.y.scale) ).attr({'font-size': 14});
+			if ( i % parseInt( this.options.data.length / this.options.ypoints ) == 0 ){
+				this.paper.text( this.chart.left + ( i * pointWidth ), this.chart.bottom + 10, i ).attr({'font-size': 14, 'opacity' : 0.3});
 				this.paper.path( [ 'M', this.chart.left + ( i * pointWidth ), this.chart.bottom, 'V', this.chart.top ] ).attr({'stroke-width': 1, 'stroke': '#000000', 'opacity': 0.6});
-				this.paper.text( this.chart.left + ( i * pointWidth ), 10, (i/this.options.y.scale) ).attr({'font-size': 14, 'opacity': 0.1});
+				this.paper.text( this.chart.left + ( i * pointWidth ), 10, i ).attr({'font-size': 14, 'opacity': 0.3});
 				this.paper.path( [ 'M', this.chart.left + ( i * pointWidth ), 5, 'V', this.chart.top - 5, ] ).attr({'stroke-width': 1, 'stroke': '#000000', 'opacity': 0.1});
 			}
 		}

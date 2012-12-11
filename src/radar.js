@@ -45,7 +45,7 @@ drawRadar: function(){
 
 	var max = 0;
 	this.options.data.each( function( child ){
-		max = Math.max( child.max(), max );
+		max = Math.max( Array.max( child ), max );
 	}, this );
 
 	this.max = max;
@@ -92,7 +92,7 @@ drawRadar: function(){
 	var vPaths = this.paper.set();
 
 	this.options.data.each( function( datapoint, point ){
-		datapoint.each( function( line, linenumber ){
+		Array.each( datapoint, function( line, linenumber ){
 			/* if we haven't started plotting points for this line .. */
 			if ( !paths[ linenumber ] ){
 				paths[ linenumber ] = [];

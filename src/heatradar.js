@@ -45,7 +45,7 @@ drawRadar: function(){
 
 	var max = 0;
 	this.options.data.each( function( child ){
-		max = Math.max( child.max(), max );
+		max = Math.max( Array.max( child ), max );
 	}, this );
 
 	this.max = max;
@@ -80,7 +80,7 @@ drawRadar: function(){
 
 	/* now we need to print out our radius */
 	this.options.data.each( function( dataset, datasetnumber ){
-		dataset.each( function( dataPoint, i ){
+		Array.each( dataset, function( dataPoint, i ){
 			var startAngle = i * sectorWidth - 90;
 			var xOff = ((datasetnumber) * pointWidth + offset + 15) * Math.cos( -startAngle * rad );
 			var yOff = ((datasetnumber) * pointWidth + offset + 15) * Math.sin( startAngle * rad);
@@ -98,7 +98,7 @@ drawRadar: function(){
 	/* now the points themselves */
 	this.options.data.each( function( dataset, datasetnumber ){
 		ranges[ datasetnumber ] = this.paper.set();
-		dataset.each( function( point, pointnumber ){
+		Array.each( dataset, function( point, pointnumber ){
 			/* we need four points (there are four lights!) */
 			var startAngle = pointnumber * sectorWidth - 90;
 			var endAngle = ( pointnumber + 1 ) * sectorWidth - 90;

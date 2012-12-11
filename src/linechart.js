@@ -24,7 +24,7 @@
 var SCGLinechart = new Class({
 Implements: [ Events, Options ],
 options:{
-	stacked: 0,
+	stacked: 0
 },
 Extends: SCGChart,
 initialize: function( obj, options ){

@@ -35,6 +35,7 @@ initialize: function( obj, options ){
 
 	this.draw();
 },
+drawPie: function(){},
 draw: function(){
 	/* Determine the size of our component parts */
 	
