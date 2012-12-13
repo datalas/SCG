@@ -1,0 +1,30 @@
+<!DOCTYPE html PUBLIC "-//W3c//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml11/DTD/xhmtml11-strict.dtd">
+<html>
+<head>
+	<script src="mootools.js" tpe="text/javascript"></script>
+	<script src="mootools-more.js" tpe="text/javascript"></script>
+	<script src="raphael.js" tpe="text/javascript"></script>
+	<script src="src/chart.js" tpe="text/javascript"></script>
+	<script src="src/linechart.js" tpe="text/javascript"></script>
+	<title>Testy</title>
+</head>
+<body>
+	<h3>Animated Line Chart</h3>
+	<div id='test'></div>
+	<button id='update'>Update</button>
+<script>
+window.addEvent( 'domready', function(){
+	var chart = new SCGLinechart( 'test', {
+		yaxis: 'thingies',
+		data: [ 10, 20, 30, 14, 19, 47, 139, 233, 123 ]
+	}); 
+
+	$('update').addEvent('click', function(){
+		chart.addPoint( Math.floor( Math.random() * 240 ) );
+	}, this );
+} );
+
+</script>
+
+</body>
+</html>

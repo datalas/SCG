@@ -38,6 +38,10 @@ initialize: function( obj, options ){
 		this.stacked = false;
 	}
 
+	this._dataLength = this.options.data.length
+	this._step = this.chart.width / (this._dataLength - 1); 
+	this._left = this.chart.left;
+
 	this.setRange( this.options.x, this.options.y );
 	this.createColours();
 	this.drawAxis();
@@ -70,24 +74,54 @@ drawAverage: function(){
 	this.averageLine = this.paper.path([ 'M', this.chart.left, this.chart.zero - height, 'H', this.chart.right ]).attr({'stroke': '#ff6600'});
 },
 drawPoints: function(){
+	this._lines = [];
 	if ( this.stacked || this.multi ){
 		this.options.key = true;
 		/* we need to redraw our lines */
 		this.options.data[0].each( function( first_line, column ){
 			var lineData = this.options.data.map( function(c){ return c[column]; } );
-			this.drawLine( lineData, column );
+			this._lines.push( this.drawLine( lineData, column ) );
 			this.addKey( column );
 		}, this );
 
 	} else {
-		this.drawLine( this.options.data, 0 );
+		this._lines.push( this.drawLine( this.options.data, 0 ) );
 	}
 },
-drawLine: function( data, colour ){
-	this.linepoints = [];
+addPoint: function( point ){
+	this.options.data.push( point );
 
-	var x = this.chart.left;
-	var step = this.chart.width / (this.options.data.length - 1); 
+	console.log( this._lines );
+
+	var oldLine = this._lines.shift();
+	oldLine.paper.linePath.remove();
+	var newLine = this.chartLine( this.options.data, 1 );
+	this._lines.push( newLine );
+
+	console.log( newLine );
+
+//	this._lines[ 0 ].paper.linePath.animate({ path: newLine.linePath }, 1000 );
+	newLine.paper.linePath = this.paper.path( newLine.linePath );
+	newLine.paper.linePath.animate( { transform: [ 'T', -this._step, 0 ] }, 1000 );
+	this.options.data.shift();
+
+
+},
+drawLine: function( data, colour ){
+	var line = this.chartLine( data, colour );
+	line.paper.linePath = this.paper.path( line.linePath );
+	return line;
+},
+chartLine: function( data, colour ){
+	var linepoints = [];
+	var line = {
+		linePath: '',
+		fillPath: '',
+		points: [],
+		paper: {}
+	};
+
+	var x = this._left;
 
 	Array.each( data, function( value, position ){
 		var height = Math.round((value / this.y.scale) * this.y.step );
@@ -117,42 +151,48 @@ drawLine: function( data, colour ){
 					}
 					this.tt.remove();
 				}).bind( point );
-		point.point = this.paper.circle( x, this.chart.zero - height, 5 ).attr( { 'stroke-width': 1, 'stroke': this.colours[colour], 'fill': '90-' + this.alphaColours[colour] + '-' + this.colours[colour], 'fill-opacity': 0.4 } );
-		point.point.hover( highlight, removeHighlight );
-
-		x += step;
-		this.linepoints.push( point );	
+//		point.point = this.paper.circle( x, this.chart.zero - height, 5 ).attr( { 'stroke-width': 1, 'stroke': this.colours[colour], 'fill': '90-' + this.alphaColours[colour] + '-' + this.colours[colour], 'fill-opacity': 0.4 } );
+//		point.point.hover( highlight, removeHighlight );
+//		line.push( point.point );
+		x += this._step;
+		linepoints.push( point );	
 	}, this );	
 
 	var path = [];
 
-	this.linepoints.reverse().each( function( point, position ){
+	linepoints.reverse().each( function( point, position ){
 		if ( position == 0 ){
 			/* first point */
 			path.push( 'M', point.x, point.y, 'R' );
-		} else if ( position == this.linepoints.length ){
+		} else if ( position == linepoints.length ){
 			/* last point */
 		} else {
-			var previous = this.linepoints[ position - 1 ];
+			var previous = linepoints[ position - 1 ];
 			path.push( point.x, point.y );
 		}
 	}, this );
 
 	/* create a fill path */
-	var fillpath = path.clone();
-	fillpath.push( 'V', this.chart.zero, 'L', this.chart.right, this.chart.zero, 'L', this.linepoints[0].x, this.linepoints[0].y, 'Z' );
-	this.fill = this.paper.path( fillpath ).attr({'stroke': 0, 'fill': this.colours[colour], 'fill-opacity': 0.3});
-	this.line = this.paper.path( path ).attr({'stroke': this.colours[colour], 'stroke-width': 2 });
+//	var fillpath = path.clone();
+//	fillpath.push( 'V', this.chart.zero, 'L', this.chart.right, this.chart.zero, 'L', linepoints[0].x, linepoints[0].y, 'Z' );
+//	var fill = this.paper.path( fillpath ).attr({'stroke': 0, 'fill': this.colours[colour], 'fill-opacity': 0.3});
+//	var hline = this.paper.path( path ).attr({'stroke': this.colours[colour], 'stroke-width': 2 });
+//	line.push( fill );
+//	line.push( hline );
 
-	this.linepoints.reverse().each( function( point, position ){
-		if ( point.point ){
-			point.point.toFront();
-		}
-	}, this );
+//	linepoints.reverse().each( function( point, position ){
+//		if ( point.point ){
+//			point.point.toFront();
+//		}
+//	}, this );
+//
+//
+//	this.grid.xAxis.toFront();
+//	this.grid.yAxis.toFront();
+//	return line;
 
-
-	this.grid.xAxis.toFront();
-	this.grid.yAxis.toFront();
+	line.linePath = path;
+	return line;
 }
 });
 
