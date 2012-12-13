@@ -46,7 +46,6 @@ drawXAxis: function(){
 		var y = this.chart.bottom;
 
 		if ( this.options.xaxis && this.options.xaxis[position]){
-			var background = this.paper.rect( this.points.x[position], this.chart.top - 10, this.xStep, this.height - 20, 10 ).attr({'fill': '#5050f0', 'fill-opacity': 0.0, 'stroke-width': 0 });
 			var label = this.paper.text( x - 5, y, this.options.xaxis[position] ).attr({'text-anchor': 'end', 'fill': this.options.labelcolour } ).rotate( -90, x, y );	
 		}
 	}, this );
