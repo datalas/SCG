@@ -84,11 +84,24 @@ options: {
 		[ 51,203,130], [ 46,134, 34]
 	],
 	startAtZero: true,
-	key: true
+	key: true,
+	format: SCGFormat	/* Used to denote additional formatting functions for the y Axis */
 },
 initialize: function( obj, options ){
 	this.setOptions( options );
 	this.setDimensions();
+
+	/* are we given any formatting options ? (and were we given enough ?) */
+	if ( this.options.format ){
+		if ( typeOf( this.options.format ) != 'array' ){
+			this.options.format = [ this.options.format ];
+		}
+		this.yFormat = {
+			value: this.options.format[ 0 ],
+			axis:  this.options.format[ 1 ],
+			store: {}  /* A storage option for the axis / value pair */
+		}
+	}
 },
 createColours: function(){
 	var a = [];
@@ -307,15 +320,30 @@ drawAxis: function(){
 	/* and draw the Y axis.  This is subtly different as we shall start at the zero point and head upwards */
 	/* and at the zero point again and head downwards */
 
+	/* pass the minium and maximum values of the y axis to the formatting function   */
+	/* this may alter the means by which the label is displayed, it might also alter */ 
+	/* the label itself */
+
+	yAxisLabel = this.options.yaxis;
+
+	if ( this.yFormat.axis ){
+		yAxisLabel = this.yFormat.axis( this.y.min, this.y.max, yAxisLabel, this.yFormat.store );
+	}
 
 	for ( var i = 0 ; i <= (this.y.points+1) ; i++ ){
 		var y = this.chart.zero - ( i * this.y.step );
 		this.points.y.push( y );
+
+		var labelValue = ( i * this.y.scale );
+		if ( this.yFormat.axis ){
+			labelValue = this.yFormat.value( labelValue, this.yFormat.store );
+		}
+
 		if ( i == 0 ){
-			this.points.yLabels.push( this.paper.text( this.options.gutter.left - 5, y, ( i * this.y.scale)  ).attr({'text-anchor': 'end', 'font-weight': 'bold', 'font-size': 13 }));
+			this.points.yLabels.push( this.paper.text( this.options.gutter.left - 5, y, 0  ).attr({'text-anchor': 'end', 'font-weight': 'bold', 'font-size': 13 }));
 		} else {
 			this.paper.path( ['M', this.options.gutter.left, y, 'L', this.options.gutter.left - 5, y ] ).attr(this.options.lines.grid); 
-			this.points.yLabels.push( this.paper.text( this.options.gutter.left - 5, y, ( i * this.y.scale)  ).attr({'text-anchor': 'end'}));
+			this.points.yLabels.push( this.paper.text( this.options.gutter.left - 5, y, labelValue  ).attr({'text-anchor': 'end'}));
 		}
 	}
 
@@ -325,11 +353,15 @@ drawAxis: function(){
 			var y = this.chart.zero + ( i * this.y.step );
 			this.paper.path( ['M', this.options.gutter.left, y, 'L', this.options.gutter.left - 5, y ] ).attr(this.options.lines.grid); 
 			this.points.y.push( y );
+
 			var value = i * this.y.scale;
-			if ( !this.options.invertNegative ){
-				value *= -1;
+
+			var labelValue = value;
+			if ( this.yFormat.axis ){
+				labelValue = this.yFormat.value( value, this.yFormat.store );
 			}
-			this.points.yLabels.push( this.paper.text( this.options.gutter.left - 5, y, value ).attr({'text-anchor': 'end'}));
+
+			this.points.yLabels.push( this.paper.text( this.options.gutter.left - 5, y, labelValue ).attr({'text-anchor': 'end'}));
 		}
 	}
 
@@ -337,7 +369,7 @@ drawAxis: function(){
 	if ( this.options.yaxis ){
 		var x = this.left + 5;
 		var y = this.chart.top + ( this.chart.height / 2 );
-		this.paper.text( x, y, this.options.yaxis ).attr({'fill': this.options.labelcolour }).rotate( -90, x, y );
+		this.paper.text( x, y, yAxisLabel ).attr({'fill': this.options.labelcolour }).rotate( -90, x, y );
 	}
 
 },
