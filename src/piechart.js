@@ -57,7 +57,11 @@ drawPie: function(){
 		var sector = this.sector( cx, cy, radius, starting_angle, starting_angle + angle, { 'fill': this.colours[ index ], 'opacity': 0.6, 'stroke': '#ffffff' } );
 		var key = this.addKey( index );
 		var ms = 500;
-		var percentage = parseInt((slice/total) * 100) + '%';
+		var percentage = parseInt((slice/total) * 100);
+		if ( percentage == 0 ){
+			percentage = '<1';
+		}
+		percentage += '%';
 		
 		var highlight = function(){
 			sector.stop().animate({transform: "s1.1 1.1 " + cx + " " + cy}, ms, "elastic");

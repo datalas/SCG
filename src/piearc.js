@@ -76,7 +76,11 @@ draw: function(){
 		var detail = section[1];
 
 		var angle = 360 * ( slice / total );
-		var percentage = parseInt((slice/total) * 100) + '%';
+		var percentage = parseInt((slice/total) * 100);
+		if ( percentage == 0 ){
+			percentage = '<1';
+		}
+		percentage += '%';
 
 		var sector = this.sector( this.chart.center, this.chart.middle, outer.outer + 15, starting_angle, starting_angle + angle, { 'fill': '#505050', 'stroke-width': 5, 'fill-opacity': 0.1, 'stroke': '#ffffff'  } );
 		var sector = this.sector( this.chart.center, this.chart.middle, inner.radius, starting_angle, starting_angle + angle, { 'fill': this.colours[ index ], 'stroke-width': 0, 'opacity': 0.8  } );
