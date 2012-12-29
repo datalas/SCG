@@ -293,11 +293,16 @@ drawAxis: function(){
 	/* it is possible that we will want to move the bottom of our graph */
 	/* this would be because of negative numbers */
 
+	this.axis = this.paper.set();
 
 	this.grid = {
 		xAxis: this.paper.path( 'M' + this.chart.left + ',' + this.chart.bottom + 'L' + this.chart.left + ',' + this.chart.top ).attr(this.options.lines.axis),
 		yAxis: this.paper.path( 'M' + this.chart.left + ',' + this.chart.zero + 'L' + this.chart.right + ',' + this.chart.zero ).attr(this.options.lines.axis)
 	};
+
+	/* add the axis lines to the axis set (so we can change / update it's ordering) */
+	this.axis.push( this.grid.xAxis );
+	this.axis.push( this.grid.yAxis );
 
 	this.points = {
 			x: [],
@@ -313,7 +318,7 @@ drawAxis: function(){
 	this.labelY = this.chart.top;
 	this.labelX = this.width - this.options.gutter.right + 30;
 	for ( var i = this.options.gutter.left; i <= ( this.width - this.options.gutter.right ); i += this.xStep ){
-		this.paper.path( ['M', i, this.chart.bottom, 'L', i, this.chart.bottom + 5 ] ).attr(this.options.lines.grid ); 
+		this.axis.push( this.paper.path( ['M', i, this.chart.bottom, 'L', i, this.chart.bottom + 5 ] ).attr(this.options.lines.grid ) ); 
 		this.points.x.push( i );
 	}
 
@@ -340,10 +345,14 @@ drawAxis: function(){
 		}
 
 		if ( i == 0 ){
-			this.points.yLabels.push( this.paper.text( this.options.gutter.left - 5, y, 0  ).attr({'text-anchor': 'end', 'font-weight': 'bold', 'font-size': 13 }));
+			var zeroLabel = this.paper.text( this.options.gutter.left - 5, y, 0  ).attr({'text-anchor': 'end', 'font-weight': 'bold', 'font-size': 13 });
+			this.axis.push( zeroLabel );
+			this.points.yLabels.push( zeroLabel );
 		} else {
-			this.paper.path( ['M', this.options.gutter.left, y, 'L', this.options.gutter.left - 5, y ] ).attr(this.options.lines.grid); 
-			this.points.yLabels.push( this.paper.text( this.options.gutter.left - 5, y, labelValue  ).attr({'text-anchor': 'end'}));
+			this.axis.push( this.paper.path( ['M', this.options.gutter.left, y, 'L', this.options.gutter.left - 5, y ] ).attr(this.options.lines.grid) ); 
+			var label = this.paper.text( this.options.gutter.left - 5, y, labelValue  ).attr({'text-anchor': 'end'});
+			this.axis.push( label );
+			this.points.yLabels.push( label );
 		}
 	}
 
@@ -351,7 +360,7 @@ drawAxis: function(){
 		/* we are doing the negative axis, so we need to move further away from zero */
 		if ( i != 0 ){
 			var y = this.chart.zero + ( i * this.y.step );
-			this.paper.path( ['M', this.options.gutter.left, y, 'L', this.options.gutter.left - 5, y ] ).attr(this.options.lines.grid); 
+			this.axis.push( this.paper.path( ['M', this.options.gutter.left, y, 'L', this.options.gutter.left - 5, y ] ).attr(this.options.lines.grid) ); 
 			this.points.y.push( y );
 
 			var value = i * this.y.scale;
@@ -361,7 +370,9 @@ drawAxis: function(){
 				labelValue = this.yFormat.value( value, this.yFormat.store );
 			}
 
-			this.points.yLabels.push( this.paper.text( this.options.gutter.left - 5, y, labelValue ).attr({'text-anchor': 'end'}));
+			var label = this.paper.text( this.options.gutter.left - 5, y, labelValue ).attr({'text-anchor': 'end'});
+			this.points.yLabels.push( label );
+			this.axis.push( label );
 		}
 	}
 
@@ -369,7 +380,7 @@ drawAxis: function(){
 	if ( this.options.yaxis ){
 		var x = this.left + 5;
 		var y = this.chart.top + ( this.chart.height / 2 );
-		this.paper.text( x, y, yAxisLabel ).attr({'fill': this.options.labelcolour }).rotate( -90, x, y );
+		this.axis.push( this.paper.text( x, y, yAxisLabel ).attr({'fill': this.options.labelcolour }).rotate( -90, x, y ) );
 	}
 
 },
