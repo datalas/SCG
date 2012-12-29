@@ -4,6 +4,7 @@
 	<script src="mootools.js" tpe="text/javascript"></script>
 	<script src="mootools-more.js" tpe="text/javascript"></script>
 	<script src="raphael.js" tpe="text/javascript"></script>
+	<script src="src/format.js" tpe="text/javascript"></script>
 	<script src="src/chart.js" tpe="text/javascript"></script>
 	<script src="src/linechart.js" tpe="text/javascript"></script>
 	<title>Testy</title>
@@ -14,9 +15,18 @@
 	<button id='update'>Update</button>
 <script>
 window.addEvent( 'domready', function(){
+	var data = [];
+	for ( var i = 0; i < 20; i++ ){
+		data[i] = Math.floor( Math.random() * 240 );
+	}
+
 	var chart = new SCGLinechart( 'test', {
 		yaxis: 'thingies',
-		data: [ 10, 20, 30, 14, 19, 47, 139, 233, 123 ]
+		data: data,
+		interval: 250,
+		complete: function(){
+			this.addPoint( Math.floor( Math.random() * 240 ) );
+		}
 	}); 
 
 	$('update').addEvent('click', function(){

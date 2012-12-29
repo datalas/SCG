@@ -24,6 +24,10 @@
 var SCGLinechart = new Class({
 Implements: [ Events, Options ],
 Extends: SCGChart,
+options:{
+	stacked: 0,
+	complete: function(){ }
+},
 initialize: function( obj, options ){
 	this.parent( obj, options );
 	this.element = $(obj);
@@ -80,36 +84,57 @@ drawPoints: function(){
 		/* we need to redraw our lines */
 		this.options.data[0].each( function( first_line, column ){
 			var lineData = this.options.data.map( function(c){ return c[column]; } );
-			this._lines.push( this.drawLine( lineData, column ) );
+			var line = this.chartLine( lineData, column );
+			this._lines.push( line );
 			this.addKey( column );
 		}, this );
 
 	} else {
-		this._lines.push( this.drawLine( this.options.data, 0 ) );
+		var line = this.chartLine( this.options.data, 0 );
+		this._lines.push( this.drawLine( line, 0 ) );
 	}
+
+	/* we want to add some buffers to our borders */
+	this.axis.splice( 0,0, this.paper.rect( 0, 0, this.chart.left, this.height ).attr({'stroke-width': 0,'fill':'#ffffff'}).toBack() );
+	this.axis.splice( 0,0, this.paper.rect( this.chart.right, 0, this.width, this.height ).attr({'stroke-width': 0, 'fill':'#ffffff'}).toBack() );
+
 },
 addPoint: function( point ){
 	this.options.data.push( point );
 
-	console.log( this._lines );
+	if ( !this.options.interval ){
+		this.options.interval = 500;
+	}
 
+	var i = 0;
 	var oldLine = this._lines.shift();
-	oldLine.paper.linePath.remove();
+	var colour = i++;
+	this.clearLine( oldLine );
 	var newLine = this.chartLine( this.options.data, 1 );
 	this._lines.push( newLine );
 
-	console.log( newLine );
-
-//	this._lines[ 0 ].paper.linePath.animate({ path: newLine.linePath }, 1000 );
-	newLine.paper.linePath = this.paper.path( newLine.linePath );
-	newLine.paper.linePath.animate( { transform: [ 'T', -this._step, 0 ] }, 1000 );
+	this.drawLine( newLine, colour ); 
+	newLine.paper.linePath.animate( { transform: [ 'T', -this._step, 0 ] }, this.options.interval, 'linear', this.options.complete.bind(this) );
+	newLine.paper.fillPath.animateWith( newLine.paper.linePath, null, { transform: [ 'T', -this._step, 0 ] }, this.options.interval, 'linear' );
+	newLine.paper.points.animateWith( newLine.paper.linePath, null,   { transform: [ 'T', -this._step, 0 ] }, this.options.interval, 'linear' );
+	newLine.paper.linePath.toFront();
+	this.axis.toFront();
 	this.options.data.shift();
 
 
 },
-drawLine: function( data, colour ){
-	var line = this.chartLine( data, colour );
-	line.paper.linePath = this.paper.path( line.linePath );
+clearLine: function( line ){
+	line.paper.linePath.remove();
+	line.paper.fillPath.remove();
+	line.paper.points.remove();
+},
+drawLine: function( line, colour ){
+	line.paper.linePath = this.paper.path( line.linePath ).attr({'stroke': this.colours[colour], 'stroke-width': 2});;
+	line.paper.fillPath = this.paper.path( line.fillPath ).attr({'stroke-width': 0, 'fill': this.colours[colour], 'fill-opacity': 0.3});;
+	line.paper.points   = this.paper.set();
+	line.points.each( function( point ){
+		line.paper.points.push( this.paper.circle( point.x, point.y, 5 ).attr( { 'stroke-width': 1, 'stroke': this.colours[colour], 'fill': '90-' + this.alphaColours[colour] + '-' + this.colours[colour], 'fill-opacity': 0.4 } ) );
+	}, this );
 	return line;
 },
 chartLine: function( data, colour ){
@@ -152,6 +177,10 @@ chartLine: function( data, colour ){
 					this.tt.remove();
 				}).bind( point );
 //		point.point = this.paper.circle( x, this.chart.zero - height, 5 ).attr( { 'stroke-width': 1, 'stroke': this.colours[colour], 'fill': '90-' + this.alphaColours[colour] + '-' + this.colours[colour], 'fill-opacity': 0.4 } );
+		line.points.push({ 
+			x: x, 
+			y: this.chart.zero - height
+		});
 //		point.point.hover( highlight, removeHighlight );
 //		line.push( point.point );
 		x += this._step;
@@ -173,8 +202,8 @@ chartLine: function( data, colour ){
 	}, this );
 
 	/* create a fill path */
-//	var fillpath = path.clone();
-//	fillpath.push( 'V', this.chart.zero, 'L', this.chart.right, this.chart.zero, 'L', linepoints[0].x, linepoints[0].y, 'Z' );
+	var fillpath = path.clone();
+	fillpath.push( 'V', this.chart.zero, 'H', x, 'V', linepoints[0].y, 'Z' );
 //	var fill = this.paper.path( fillpath ).attr({'stroke': 0, 'fill': this.colours[colour], 'fill-opacity': 0.3});
 //	var hline = this.paper.path( path ).attr({'stroke': this.colours[colour], 'stroke-width': 2 });
 //	line.push( fill );
@@ -192,6 +221,7 @@ chartLine: function( data, colour ){
 //	return line;
 
 	line.linePath = path;
+	line.fillPath = fillpath;
 	return line;
 }
 });
