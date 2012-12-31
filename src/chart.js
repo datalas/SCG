@@ -85,6 +85,8 @@ options: {
 	],
 	startAtZero: true,
 	key: true,
+	average: false,
+	stacked: false,
 	format: SCGFormat	/* Used to denote additional formatting functions for the y Axis */
 },
 initialize: function( obj, options ){

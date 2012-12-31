@@ -23,9 +23,6 @@
 
 var SCGLinechart = new Class({
 Implements: [ Events, Options ],
-options:{
-	stacked: 0
-},
 Extends: SCGChart,
 initialize: function( obj, options ){
 	this.parent( obj, options );
@@ -46,6 +43,31 @@ initialize: function( obj, options ){
 	this.drawAxis();
 	this.drawGrid();
 	this.drawPoints();
+
+	if ( this.options.average ){
+		this.drawAverage();
+	}
+},
+drawAverage: function(){
+	var numberOfPoints = 0;
+	var total = 0;
+
+	if ( this.stacked || this.multi ){
+		this.options.data.each( function( series ){
+			series.each( function( point ){
+				numberOfPoints++;
+				total += point;
+			}, this );
+		}, this );
+	} else {
+		this.options.data.each( function( point ){
+			numberOfPoints++;
+			total += point;
+		}, this );
+	}
+
+	var height = Math.round(( (total/numberOfPoints) / this.y.scale) * this.y.step );
+	this.averageLine = this.paper.path([ 'M', this.chart.left, this.chart.zero - height, 'H', this.chart.right ]).attr({'stroke': '#ff6600'});
 },
 drawPoints: function(){
 	if ( this.stacked || this.multi ){
