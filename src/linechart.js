@@ -26,6 +26,8 @@ Implements: [ Events, Options ],
 Extends: SCGChart,
 options:{
 	stacked: 0,
+	smooth: true,
+	points: true,
 	complete: function(){ }
 },
 initialize: function( obj, options ){
@@ -85,7 +87,7 @@ drawPoints: function(){
 		this.options.data[0].each( function( first_line, column ){
 			var lineData = this.options.data.map( function(c){ return c[column]; } );
 			var line = this.chartLine( lineData, column );
-			this._lines.push( line );
+			this._lines.push( this.drawLine( line, column ) );
 			this.addKey( column );
 		}, this );
 
@@ -97,6 +99,11 @@ drawPoints: function(){
 	/* we want to add some buffers to our borders */
 	this.axis.splice( 0,0, this.paper.rect( 0, 0, this.chart.left, this.height ).attr({'stroke-width': 0,'fill':'#ffffff'}).toBack() );
 	this.axis.splice( 0,0, this.paper.rect( this.chart.right, 0, this.width, this.height ).attr({'stroke-width': 0, 'fill':'#ffffff'}).toBack() );
+
+	this.axis.toFront();
+	this._lines.each( function( line ){
+		line.paper.points.toFront();		
+	});
 
 },
 addPoint: function( point ){
@@ -120,8 +127,6 @@ addPoint: function( point ){
 	newLine.paper.linePath.toFront();
 	this.axis.toFront();
 	this.options.data.shift();
-
-
 },
 clearLine: function( line ){
 	line.paper.linePath.remove();
@@ -132,13 +137,17 @@ drawLine: function( line, colour ){
 	line.paper.linePath = this.paper.path( line.linePath ).attr({'stroke': this.colours[colour], 'stroke-width': 2});;
 	line.paper.fillPath = this.paper.path( line.fillPath ).attr({'stroke-width': 0, 'fill': this.colours[colour], 'fill-opacity': 0.3});;
 	line.paper.points   = this.paper.set();
-	line.points.each( function( point ){
-		line.paper.points.push( this.paper.circle( point.x, point.y, 5 ).attr( { 'stroke-width': 1, 'stroke': this.colours[colour], 'fill': '90-' + this.alphaColours[colour] + '-' + this.colours[colour], 'fill-opacity': 0.4 } ) );
-	}, this );
+	if ( this.options.points ){
+		line.points.each( function( point, index ){
+			var circlepoint = this.paper.circle( point.x, point.y, 5 ).attr( { 'stroke-width': 1, 'stroke': this.colours[colour], 'fill': '90-' + this.alphaColours[colour] + '-' + this.colours[colour], 'fill-opacity': 0.4 } ).toFront();
+			point.point = circlepoint;
+			circlepoint.hover( point.highlight.bind( point ), point.removeHighlight.bind( point ) );
+			line.paper.points.push( circlepoint );
+		}, this );
+	}
 	return line;
 },
 chartLine: function( data, colour ){
-	var linepoints = [];
 	var line = {
 		linePath: '',
 		fillPath: '',
@@ -147,13 +156,13 @@ chartLine: function( data, colour ){
 	};
 
 	var x = this._left;
+	var obj = this;
 
 	Array.each( data, function( value, position ){
 		var height = Math.round((value / this.y.scale) * this.y.step );
 
-		obj = this;
 		var point = {
-			obj: this,
+			obj: obj,
 			bottom: this.chart.zero - height + 5,
 			value: value,
 			middle: x,
@@ -161,64 +170,50 @@ chartLine: function( data, colour ){
 			y: this.chart.zero - height,
 			label: {
 				label: this.options.labels[ position ]
+			},
+			highlight: function(){ 
+				if ( this.point ){
+					this.point.attr({'fill-opacity': 1}); 
+				}
+				this.tt = this.obj.createToolTip( this );	
+			},
+			removeHighlight: function(){
+				if ( this.point ){
+					this.point.attr({'fill-opacity': 0.4});
+				}
+				this.tt.remove();
 			}
 		};
 
-		var highlight = (function(){ 
-					if ( this.point ){
-						this.point.attr({'fill-opacity': 1}); 
-					}
-					this.tt = this.obj.createToolTip( this );	
-				}).bind( point );
-		var removeHighlight = (function(){
-					if ( this.point ){
-						this.point.attr({'fill-opacity': 0.4});
-					}
-					this.tt.remove();
-				}).bind( point );
-//		point.point = this.paper.circle( x, this.chart.zero - height, 5 ).attr( { 'stroke-width': 1, 'stroke': this.colours[colour], 'fill': '90-' + this.alphaColours[colour] + '-' + this.colours[colour], 'fill-opacity': 0.4 } );
-		line.points.push({ 
-			x: x, 
-			y: this.chart.zero - height
-		});
-//		point.point.hover( highlight, removeHighlight );
-//		line.push( point.point );
+		point.highlight.bind( point );
+		point.removeHighlight.bind( point );
+
+		line.points.push( point );
+
 		x += this._step;
-		linepoints.push( point );	
 	}, this );	
 
 	var path = [];
 
-	linepoints.reverse().each( function( point, position ){
+	line.points.reverse().each( function( point, position ){
 		if ( position == 0 ){
 			/* first point */
-			path.push( 'M', point.x, point.y, 'R' );
-		} else if ( position == linepoints.length ){
+			if ( this.options.smooth ){
+				path.push( 'M', point.x, point.y, 'R' );
+			} else {
+				path.push( 'M', point.x, point.y, 'L' );
+			}
+		} else if ( position == line.points.length ){
 			/* last point */
 		} else {
-			var previous = linepoints[ position - 1 ];
+			var previous = line.points[ position - 1 ];
 			path.push( point.x, point.y );
 		}
 	}, this );
 
 	/* create a fill path */
 	var fillpath = path.clone();
-	fillpath.push( 'V', this.chart.zero, 'H', x, 'V', linepoints[0].y, 'Z' );
-//	var fill = this.paper.path( fillpath ).attr({'stroke': 0, 'fill': this.colours[colour], 'fill-opacity': 0.3});
-//	var hline = this.paper.path( path ).attr({'stroke': this.colours[colour], 'stroke-width': 2 });
-//	line.push( fill );
-//	line.push( hline );
-
-//	linepoints.reverse().each( function( point, position ){
-//		if ( point.point ){
-//			point.point.toFront();
-//		}
-//	}, this );
-//
-//
-//	this.grid.xAxis.toFront();
-//	this.grid.yAxis.toFront();
-//	return line;
+	fillpath.push( 'V', this.chart.zero, 'H', x, 'V', line.points[0].y, 'Z' );
 
 	line.linePath = path;
 	line.fillPath = fillpath;
