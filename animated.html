@@ -24,12 +24,14 @@ window.addEvent( 'domready', function(){
 		yaxis: 'thingies',
 		data: data,
 		interval: 250,
-		complete: function(){
-			this.addPoint( Math.floor( Math.random() * 240 ) );
-		}
 	}); 
 
+
 	$('update').addEvent('click', function(){
+		chart.addEvent( 'periodical', function(){
+			this.addPoint( Math.floor( Math.random() * 240 ) );
+		} );
+
 		chart.addPoint( Math.floor( Math.random() * 240 ) );
 	}, this );
 } );

@@ -28,7 +28,9 @@ options:{
 	stacked: 0,
 	smooth: true,
 	points: true,
-	complete: function(){ }
+	complete: function(){ },
+	periodical: function(){ },
+	interval: 500
 },
 initialize: function( obj, options ){
 	this.parent( obj, options );
@@ -57,6 +59,10 @@ initialize: function( obj, options ){
 	if ( this.options.average ){
 		this.drawAverage();
 	}
+
+	(function(){
+		this.fireEvent('periodical');
+	}).periodical( this.options.interval, this );
 },
 drawAverage: function(){
 	var numberOfPoints = 0;
@@ -102,47 +108,80 @@ drawPoints: function(){
 
 	this.axis.toFront();
 	this._lines.each( function( line ){
-		line.paper.points.toFront();		
+		line.paper.pointsSet.toFront();		
 	});
 
 },
 addPoint: function( point ){
 	this.options.data.push( point );
 
-	if ( !this.options.interval ){
-		this.options.interval = 500;
+	if ( this.stacked || this.multi ){
+		this.options.data[0].each( function( first_line, column ){
+			var lineData = this.options.data.map( function(c){ return c[column]; } );
+			var line = this.addPointToLine( this._lines[ column ], lineData, column );
+			delete lineData;
+		}, this );
+	} else {
+		this.addPointToLine( this._lines[ 0 ], this.options.data, 1 );
 	}
 
-	var i = 0;
-	var oldLine = this._lines.shift();
-	var colour = i++;
-	this.clearLine( oldLine );
-	var newLine = this.chartLine( this.options.data, 1 );
-	this._lines.push( newLine );
-
-	this.drawLine( newLine, colour ); 
-	newLine.paper.linePath.animate( { transform: [ 'T', -this._step, 0 ] }, this.options.interval, 'linear', this.options.complete.bind(this) );
-	newLine.paper.fillPath.animateWith( newLine.paper.linePath, null, { transform: [ 'T', -this._step, 0 ] }, this.options.interval, 'linear' );
-	newLine.paper.points.animateWith( newLine.paper.linePath, null,   { transform: [ 'T', -this._step, 0 ] }, this.options.interval, 'linear' );
-	newLine.paper.linePath.toFront();
 	this.axis.toFront();
 	this.options.data.shift();
 },
-clearLine: function( line ){
-	line.paper.linePath.remove();
-	line.paper.fillPath.remove();
-	line.paper.points.remove();
+addPointToLine: function( line, lineData, colour ){
+	var newLine = this.chartLine( lineData, 1 );
+	this.moveLine( line, newLine, colour ); 
+
+	delete newLine;
+
+	line.paper.linePath.animate( { transform: [ 'T', -this._step, 0 ] }, this.options.interval, 'linear', this.complete.bind(this) );
+	line.paper.fillPath.animateWith( line.paper.linePath, null, { transform: [ 'T', -this._step, 0 ] }, this.options.interval, 'linear' );
+	line.paper.pointsSet.animateWith( line.paper.linePath, null,   { transform: [ 'T', -this._step, 0 ] }, this.options.interval, 'linear' );
+
+	line.paper.linePath.toFront();
 },
 drawLine: function( line, colour ){
 	line.paper.linePath = this.paper.path( line.linePath ).attr({'stroke': this.colours[colour], 'stroke-width': 2});;
 	line.paper.fillPath = this.paper.path( line.fillPath ).attr({'stroke-width': 0, 'fill': this.colours[colour], 'fill-opacity': 0.3});;
-	line.paper.points   = this.paper.set();
+	line.paper.points   = [];//this.paper.set();
+	line.paper.pointsSet = this.paper.set();
 	if ( this.options.points ){
 		line.points.each( function( point, index ){
 			var circlepoint = this.paper.circle( point.x, point.y, 5 ).attr( { 'stroke-width': 1, 'stroke': this.colours[colour], 'fill': '90-' + this.alphaColours[colour] + '-' + this.colours[colour], 'fill-opacity': 0.4 } ).toFront();
 			point.point = circlepoint;
+
+			point.highlight = function(){ 
+				if ( this.point ){
+					this.point.attr({'fill-opacity': 1}); 
+				}
+				this.tt = this.obj.createToolTip( this );	
+			};
+			point.removeHighlight = function(){
+				if ( this.point ){
+					this.point.attr({'fill-opacity': 0.4});
+				}
+				this.tt.remove();
+			};
+
+
 			circlepoint.hover( point.highlight.bind( point ), point.removeHighlight.bind( point ) );
 			line.paper.points.push( circlepoint );
+			line.paper.pointsSet.push( circlepoint );
+		}, this );
+	}
+	return line;
+},
+moveLine: function( line, lineData, colour ){
+	line.paper.linePath.transform( [ 'T', 0, 0 ] );
+	line.paper.fillPath.transform( [ 'T', 0, 0 ] );
+
+	line.paper.linePath.attr( { path: lineData.linePath } );
+	line.paper.fillPath.attr( { path: lineData.fillPath } );
+
+	if ( this.options.points ){
+		line.paper.points.each( function( point, index ){
+			point.transform( [ 'T', 0, 0 ] );
+			point.attr({ cx: lineData.points[index].x, cy: lineData.points[index].y } );
 		}, this );
 	}
 	return line;
@@ -170,23 +209,11 @@ chartLine: function( data, colour ){
 			y: this.chart.zero - height,
 			label: {
 				label: this.options.labels[ position ]
-			},
-			highlight: function(){ 
-				if ( this.point ){
-					this.point.attr({'fill-opacity': 1}); 
-				}
-				this.tt = this.obj.createToolTip( this );	
-			},
-			removeHighlight: function(){
-				if ( this.point ){
-					this.point.attr({'fill-opacity': 0.4});
-				}
-				this.tt.remove();
 			}
 		};
 
-		point.highlight.bind( point );
-		point.removeHighlight.bind( point );
+//		point.highlight.bind( point );
+//		point.removeHighlight.bind( point );
 
 		line.points.push( point );
 
@@ -215,9 +242,12 @@ chartLine: function( data, colour ){
 	var fillpath = path.clone();
 	fillpath.push( 'V', this.chart.zero, 'H', x, 'V', line.points[0].y, 'Z' );
 
-	line.linePath = path;
-	line.fillPath = fillpath;
+	line.linePath = path.join(',');
+	line.fillPath = fillpath.join(',');
 	return line;
+},
+complete: function(){
+	this.fireEvent('complete');
 }
 });
 

@@ -83,6 +83,8 @@ options: {
 		[169,83,171], [227,106,105], [255,103, 0], [146, 22, 34], [255,192, 81], 
 		[ 51,203,130], [ 46,134, 34]
 	],
+	min: 0,
+	max: 1,
 	startAtZero: true,
 	key: true,
 	format: SCGFormat	/* Used to denote additional formatting functions for the y Axis */
@@ -243,6 +245,9 @@ setRange: function()
 	if ( this.options.startAtZero ){
 		this.y.min = Math.min( 0, this.y.min );
 	}
+
+	this.y.min = Math.min( this.y.min, this.options.min );
+	this.y.max = Math.max( this.y.max, this.options.max );
 
 	/* if we have negative numbers, then we need to ensure that our minimum is */
 	/* something that we can divide up by whatever our steps are ... 	   */
