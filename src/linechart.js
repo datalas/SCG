@@ -104,7 +104,7 @@ redrawAxis: function(){
 		this.clickableGrid();
 	}
 
-	this._lines.reverse().each( function( line ){
+	this._lines.each( function( line ){
 		line.paper.pointsSet.toFront();		
 	});
 },
