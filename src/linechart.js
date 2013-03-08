@@ -28,16 +28,23 @@ options:{
 	stacked: 0,
 	smooth: true,
 	points: true,
-	complete: function(){ },
+
+	clickable: false,
+	tailkeys: false,
+
+	interval: 500,
+
 	periodical: function(){ },
-	interval: 500
+	complete: function(){ },
+	translateLabels: function( label ){ return label; }
 },
 initialize: function( obj, options ){
 	this.parent( obj, options );
 	this.element = $(obj);
 	this.createPaper();
+	this.clickgrid = this.paper.set();
 
-	this.numberOfPoints = Math.min( this.options.data.length - 1, 100 );
+	this.numberOfPoints = this.options.data.length;
 	this.options.key = false;
 
 	/* line graphs might not be stacked (infact, probably aren't */
@@ -46,12 +53,45 @@ initialize: function( obj, options ){
 		this.stacked = false;
 	}
 
-	this._dataLength = this.options.data.length
-	this._step = this.chart.width / (this._dataLength - 1); 
-	this._left = this.chart.left;
-
-	this.setRange( this.options.x, this.options.y );
 	this.createColours();
+
+	this.resize( this.options.width, this.options.height );
+
+	this._run = true;
+
+	(function(){
+		if ( this._run ){
+			this.fireEvent('periodical');
+		}
+	}).periodical( this.options.interval, this );
+
+},
+redraw: function(){
+	/* check whether we need to adjust the scale of our graph */
+	if ( this.setRange() ){
+		/* The range has changed, so we need to redraw our Axis */
+		this.redrawAxis();
+	}	
+
+	if ( this.stacked || this.multi ){
+		this.options.data[0].each( function( first_line, column ){
+			var lineData = this.options.data.map( function(c){ return c[column]; } );
+			var newLine = this.chartLine( lineData, 1 );
+			this.moveLine( this._lines[ column ], newLine, column ); 
+			delete lineData;
+		}, this );
+	} else {
+		var newLine = this.chartLine( this.options.data, 1 );
+		this.moveLine( this._lines[ 0 ], newLine, colomn ); 
+	}
+
+	this.tailKeys();
+},
+redrawAxis: function(){
+	/* remove all elements from our paper */
+	this.paper.clear();
+	
+	/* and redraw the graph */
 	this.drawAxis();
 	this.drawGrid();
 	this.drawPoints();
@@ -60,9 +100,20 @@ initialize: function( obj, options ){
 		this.drawAverage();
 	}
 
-	(function(){
-		this.fireEvent('periodical');
-	}).periodical( this.options.interval, this );
+	if( this.options.clickable ){
+		this.clickableGrid();
+	}
+
+	this._lines.reverse().each( function( line ){
+		line.paper.pointsSet.toFront();		
+	});
+},
+
+stop: function(){
+	this._run = false;
+},
+run: function(){
+	this._run = true;
 },
 drawAverage: function(){
 	var numberOfPoints = 0;
@@ -106,14 +157,19 @@ drawPoints: function(){
 	this.axis.splice( 0,0, this.paper.rect( 0, 0, this.chart.left, this.height ).attr({'stroke-width': 0,'fill':'#ffffff'}).toBack() );
 	this.axis.splice( 0,0, this.paper.rect( this.chart.right, 0, this.width, this.height ).attr({'stroke-width': 0, 'fill':'#ffffff'}).toBack() );
 
-	this.axis.toFront();
-	this._lines.each( function( line ){
-		line.paper.pointsSet.toFront();		
-	});
 
+	this.axis.toFront();
 },
-addPoint: function( point ){
+addPoint: function( point, label ){
+	/* add the point to our data */
 	this.options.data.push( point );
+	this.options.labels.push( label );
+
+	/* check whether we need to adjust the scale of our graph */
+	if ( this.setRange() ){
+		/* The range has changed, so we need to redraw our Axis */
+		this.redrawAxis();
+	}	
 
 	if ( this.stacked || this.multi ){
 		this.options.data[0].each( function( first_line, column ){
@@ -125,8 +181,15 @@ addPoint: function( point ){
 		this.addPointToLine( this._lines[ 0 ], this.options.data, 1 );
 	}
 
+	this.tailKeys();
+
 	this.axis.toFront();
 	this.options.data.shift();
+	this.options.labels.shift();
+
+	if ( this.clickgrid ){
+		this.clickgrid.toFront();
+	}
 },
 addPointToLine: function( line, lineData, colour ){
 	var newLine = this.chartLine( lineData, 1 );
@@ -212,9 +275,6 @@ chartLine: function( data, colour ){
 			}
 		};
 
-//		point.highlight.bind( point );
-//		point.removeHighlight.bind( point );
-
 		line.points.push( point );
 
 		x += this._step;
@@ -248,7 +308,100 @@ chartLine: function( data, colour ){
 },
 complete: function(){
 	this.fireEvent('complete');
+},
+
+resize: function( width, height ){
+
+	/* we wish to resize the chart */
+	/* set the new dimensions */
+	this.options.width = width;
+	this.options.height = height;
+
+	/* resize the paper */
+	this.paper.setSize( width, height );
+	
+	/* reset the dimensions */
+	this.setDimensions();
+
+	/* set ranges */
+	this.setRange( this.options.x, this.options.y );
+
+	this._step = this.chart.width / (this.numberOfPoints - 1); 
+	this._left = this.chart.left;
+
+	this.redrawAxis();
+},
+
+
+clickableGrid: function(){
+	this.clickgrid.clear();
+	Array.each( this.points.x, function( point, index ){
+		var segment = this.paper.rect( point, this.chart.top, this.xStep, this.chart.height ).attr({'fill':'#ff00ff', 'opacity': 0}).toFront();
+		segment.click( (function(){ 
+			this.fireEvent('click', [ this.options.labels[ index ], index ] );
+		}).bind(this));
+
+		segment.hover( (function(){
+		}).bind(this));
+	}, this );
+},
+
+markLabel: function( label ){
+	if ( this.labelMark ){
+		this.labelMark.remove();
+	}
+	
+	if ( label ){
+		Array.each( this.points.x, function( point, index ){
+			if ( this.options.labels[ index ] == label ){
+				this.labelMark = this.paper.path( [ 'M', point + ( this.xStep / 2 ), this.chart.bottom, 'V', this.chart.top ] ).attr({'stroke': '#0000ff'});
+			}
+		}, this );
+	}
+},
+
+tailKeys: function(){
+	if ( !this.options.tailkeys ){
+		return;
+	}
+
+	/* creates / updates keys at the start and end of the X Axis (usually to indicate the passage of time */
+	if ( !this._labels ){
+		this._labels = {
+			start: {
+				label: this.paper.text( this.chart.left, this.chart.bottom + 5 ).attr({'fill': '#202020', 'text-anchor': 'start'}),
+				pos: 0
+			},
+			end: {
+				label: this.paper.text( this.chart.left, this.chart.bottom + 5 ).attr({'fill': '#202020', 'text-anchor': 'end'}),
+				pos: this.options.labels.length - 1
+			}
+		};
+
+		this.axis.push( this._labels.start.label, this._labels.end.label );
+	}	
+
+	/* work out which keys go where */
+	this._labels.start.pos = 0;
+	this._labels.end.pos = this.options.labels.length - 1;
+
+
+	/* Firstly, place the key etc */
+	[ this._labels.start, this._labels.end ].each( function( label ){
+		/* set the label's text to be the correct value */
+		label.label.attr({ text: this.options.translateLabels( this.options.labels[ label.pos ] )  });
+
+		/* calculate where it should be */
+		var size = label.label.getBBox();
+		var x = this.chart.left + ( label.pos * this.xStep );
+		
+		label.label.attr({x: x});
+	}, this );
 }
+
+
+
+
 });
 
 

@@ -206,8 +206,7 @@ setDimensions: function(){
 },
 setRange: function()
 {
-	this.y = {
-	};
+	y = {};
 
 	/* determine whether this is a stacked graph or otherwise */
 	switch( typeOf( this.options.data[0] ) ){
@@ -229,32 +228,32 @@ setRange: function()
 			lowest.push( l );
 		}, this );
 
-		this.y.min = Math.floor( lowest.min() * 10 ) / 10;
-		this.y.max = Math.ceil( highest.max() / 10 ) * 10;
+		y.min = Math.floor( lowest.min() * 10 ) / 10;
+		y.max = Math.ceil( highest.max() / 10 ) * 10;
 
 		break
 	case 'number':
 	case 'string':
 		this.stacked = false;
-		this.y.min = Math.floor( this.options.data.map( function(point){ return parseInt( point ) } ).min() * 10 ) / 10;
-		this.y.max = Math.ceil( this.options.data.map( function(point){ return parseInt( point ) } ).max() / 10 ) * 10;
+		y.min = Math.floor( this.options.data.map( function(point){ return parseInt( point ) } ).min() * 10 ) / 10;
+		y.max = Math.ceil( this.options.data.map( function(point){ return parseInt( point ) } ).max() / 10 ) * 10;
 
 		break;
 	};
 
 	if ( this.options.startAtZero ){
-		this.y.min = Math.min( 0, this.y.min );
+		y.min = Math.min( 0, y.min );
 	}
 
-	this.y.min = Math.min( this.y.min, this.options.min );
-	this.y.max = Math.max( this.y.max, this.options.max );
+	y.min = Math.min( y.min, this.options.min );
+	y.max = Math.max( y.max, this.options.max );
 
 	/* if we have negative numbers, then we need to ensure that our minimum is */
 	/* something that we can divide up by whatever our steps are ... 	   */
 
 	/* we can determine the maximum range we have to deal with as being the maximum */
 	/* value of our Maximum or (Minimum * -1) */
-	var scaleMax = Math.max( this.y.max, this.y.min * -1 );
+	var scaleMax = Math.max( y.max, y.min * -1 );
 
 	/* determine the scale, this is to get the maximum value we encounter into */
 	/* the correct number of points */
@@ -265,7 +264,7 @@ setRange: function()
 
 	var ymax = 0;
 	var points = -1;
-	while ( ymax < this.y.max ){
+	while ( ymax < y.max ){
 		ymax += scale;
 		points ++;
 	}
@@ -273,7 +272,7 @@ setRange: function()
 
 	var ymin = 0;
 	var npoints = -1;
-	while ( ymin > this.y.min ){
+	while ( ymin > y.min ){
 		ymin -= scale;
 		npoints++;
 	}
@@ -281,22 +280,51 @@ setRange: function()
 	var zeroheight = parseInt((this.chart.height/(ymax - ymin)) * ( - ymin ));
 	this.chart.zero = this.chart.bottom - zeroheight;
 
+	/* this.y.scale gives us the number of units we have per step (in order to have the correct number of steps */
+	var step = Math.ceil( (this.chart.zero - this.chart.top ) / (points+1) );
+
+	var dirty = false;
+
+	if ( this.y ){
+		/* we already have a range, has it changed any ? */
+		if ( 
+			this.y.max != ymax 
+			|| 
+			this.y.points != points
+			||
+			this.y.min != ymin
+			||
+			this.y.npoints != npoints
+			||
+			this.y.scale != scale
+			||
+			this.y.step != step
+		){
+			dirty = true;
+		}
+	} 
+
 	this.y = {
 		max: ymax,
 		points: points,
 		min: ymin,
 		npoints: npoints,
 		scale: scale,
-		/* this.y.scale gives us the number of units we have per step (in order to have the correct number of steps */
-		step: Math.ceil( (this.chart.zero - this.chart.top ) / (points+1) )
+		step: step
 	};
 
+	return dirty;
 },
 drawAxis: function(){
 	/* draw both the X and Y axis */
 	
 	/* it is possible that we will want to move the bottom of our graph */
 	/* this would be because of negative numbers */
+
+	if ( this.axis ){
+		this.axis.remove();
+		delete this.axis;
+	}
 
 	this.axis = this.paper.set();
 
@@ -317,12 +345,13 @@ drawAxis: function(){
 	};
 
 	/* draw the X axis */
-	this.xStep = parseInt( this.chart.width / this.numberOfPoints );
+	this.xStep = this.chart.width / this.numberOfPoints;
 
 	var label = 0;
 	this.labelY = this.chart.top;
 	this.labelX = this.width - this.options.gutter.right + 30;
-	for ( var i = this.options.gutter.left; i <= ( this.width - this.options.gutter.right ); i += this.xStep ){
+
+	for ( var i = this.chart.left; i < this.chart.width + this.chart.left; i += this.xStep ){
 		this.axis.push( this.paper.path( ['M', i, this.chart.bottom, 'L', i, this.chart.bottom + 5 ] ).attr(this.options.lines.grid ) ); 
 		this.points.x.push( i );
 	}
@@ -445,8 +474,19 @@ getColour: function( value ){
 
 	return 'rgb(' + r + ',' + g + ',' + b + ')';
 
-}
+},
+data: function( newData ){
+	this.options.data = newData;
 
+	this.redraw();
+},
+labels: function( newLabels ){
+	this.options.labels = newLabels;
+},
+
+redraw: function(){
+	/* Virtual method to be overloaded */
+}
 
 });
 
