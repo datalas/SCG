@@ -36,7 +36,17 @@ options:{
 
 	periodical: function(){ },
 	complete: function(){ },
-	translateLabels: function( label ){ return label; }
+	translateLabels: function( label ){ return label; },
+	styles: {
+		markLabel: {
+			'stroke': '#0000ff',
+			'fill': '#0000ff'
+		},
+		selection: {
+			'fill':'#d0d0ff', 
+			'opacity': 0.6
+		}
+	}
 },
 initialize: function( obj, options ){
 	this.parent( obj, options );
@@ -96,6 +106,7 @@ redraw: function(){
 redrawAxis: function(){
 	/* remove all elements from our paper */
 	this.paper.clear();
+	this._labels = null;
 	
 	/* and redraw the graph */
 	this.drawAxis();
@@ -355,17 +366,18 @@ clickableGrid: function(){
 /* Selection code, allowing a user to select bits of the chart */
 getSelectionPosition: function(e){
 	return {
-		x: e.client.x - this.element.getPosition().x - this.chart.left,
-		y: e.client.y - this.element.getPosition().y - this.chart.top
+		x: e.page.x - this.element.getCoordinates().left - this.chart.left,
+		y: e.page.y - this.element.getCoordinates().top - this.chart.top
 	}
 },
 makeSelection: function(x){
 	if ( !x ){
 		return;
 	}
+
 	x += this.chart.left;
 	if ( !this._selection ){
-		this._selection = this.paper.rect( x, this.chart.top, this.xStep, this.chart.height ).attr({'fill':'#f0f0ff', 'opacity': 0.5}).toFront();
+		this._selection = this.paper.rect( x, this.chart.top, this.xStep, this.chart.height ).attr( this.options.styles.selection ).toFront();
 	}
 	this._selection.attr({ 
 		x: x,
@@ -387,15 +399,16 @@ markRange: function( start, stop ){
 
 	this.makeSelection( startPosition * this.xStep );
 	
-	startPosition *= this.xStep;
-	stopPosition *= this.xStep;
+	startPosition = parseInt( startPosition ) * this.xStep;
+	stopPosition  = parseInt( stopPosition ) * this.xStep;
 
 	if ( this._selection ){
 		this._selection.attr({ 
-			x: (Math.min( startPosition. stopPosition )) + this.chart.left,
+			x: (Math.min( startPosition, stopPosition )) + this.chart.left,
 			width: Math.max( 
 				startPosition - stopPosition,
-				stopPosition - startPosition
+				stopPosition - startPosition,
+				0.1
 			)
 		});
 	}
@@ -404,9 +417,11 @@ startSelect: function(e){
 	e.stop();
 
 	this._startSelection = this.getSelectionPosition(e);
-	this.makeSelection( this._startSelection.x  );
 
-console.log( 'starting selection', this._startSelection.x );
+	/* rationalise X so that it starts at the nearest point on the graph */
+	this._startSelection.x = this.xStep * ( parseInt( this._startSelection.x / this.xStep ));
+
+	this.makeSelection( this._startSelection.x  );
 
 	this.fireEvent('selectstart');
 },
@@ -444,14 +459,16 @@ moveSelect: function(e){
 		&&
 		pos.y < this.chart.height
 	){
-console.log( '.... ', pos );
+
+
 		/* we are within the clickable area of the graph */
 		if ( this._selection && this._startSelection ){
 			this._selection.attr({ 
 				x: (Math.min( this._startSelection.x, pos.x )) + this.chart.left,
 				width: Math.max( 
 					pos.x - this._startSelection.x,
-					this._startSelection.x - pos.x
+					this._startSelection.x - pos.x,
+					0.1
 				)
 			});
 		}
@@ -479,7 +496,19 @@ markLabel: function( label ){
 	if ( label ){
 		Array.each( this.points.x, function( point, index ){
 			if ( this.options.labels[ index ] == label ){
-				this.labelMark = this.paper.path( [ 'M', point + ( this.xStep / 2 ), this.chart.bottom, 'V', this.chart.top ] ).attr({'stroke': '#0000ff'});
+				var pointWidth  = this.xStep / 2;
+				var pointHeight = 5;
+				this.labelMark = this.paper.path( [ 
+					'M', point, this.chart.bottom, 
+					'L', point + pointWidth, this.chart.bottom + pointHeight,
+					'H', point - pointWidth,
+					'L', point, this.chart.bottom,
+					'V', this.chart.top,
+					'L', point - pointWidth, this.chart.top - pointHeight,
+					'H', point + pointWidth,
+					'L', point, this.chart.top 
+
+				] ).attr( this.options.styles.markLabel);
 			}
 		}, this );
 	}
@@ -510,17 +539,16 @@ tailKeys: function(){
 	this._labels.start.pos = 0;
 	this._labels.end.pos = this.options.labels.length - 1;
 
-
 	/* Firstly, place the key etc */
 	[ this._labels.start, this._labels.end ].each( function( label ){
 		/* set the label's text to be the correct value */
-		label.label.attr({ text: this.options.translateLabels( this.options.labels[ label.pos ] )  });
-
 		/* calculate where it should be */
-		var size = label.label.getBBox();
 		var x = this.chart.left + ( label.pos * this.xStep );
-		
-		label.label.attr({x: x});
+
+		label.label.attr({ 
+			text: this.options.translateLabels( this.options.labels[ label.pos ] ),
+			x: x
+		});
 	}, this );
 }
 
