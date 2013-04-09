@@ -66,7 +66,7 @@ function SCGFormatBytesAxis( min, max, label, store ){
 
 	/* we actually want numbers in sort of hundreds so ... */
 	var quantifier;
-	var quantifiers = [ '', ' (KBytes)', ' (MBytes)', ' (GBytes)', ' (PBytes)' ];
+	var quantifiers = [ '', ' (KBytes)', ' (MBytes)', ' (GBytes)', ' (TBytes)', ' (PBytes)' ];
 	var divisor = 1;
 	for ( var i = 0; i < quantifiers.length ; i ++ ){
 		divisor *= 1024;
