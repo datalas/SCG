@@ -228,15 +228,16 @@ setRange: function()
 			lowest.push( l );
 		}, this );
 
-		y.min = Math.floor( lowest.min() * 10 ) / 10;
-		y.max = Math.ceil( highest.max() / 10 ) * 10;
+		y.min = Math.floor( lowest.min() );
+		y.max = Math.ceil( highest.max() );
 
 		break
 	case 'number':
 	case 'string':
 		this.stacked = false;
-		y.min = Math.floor( this.options.data.map( function(point){ return parseInt( point ) } ).min() * 10 ) / 10;
-		y.max = Math.ceil( this.options.data.map( function(point){ return parseInt( point ) } ).max() / 10 ) * 10;
+
+		y.min = Math.floor( this.options.data.map( function(point){ return Math.floor( point ) } ).min() );
+		y.max = Math.ceil( this.options.data.map( function(point){ return Math.ceil( point ) } ).max() );
 
 		break;
 	};
