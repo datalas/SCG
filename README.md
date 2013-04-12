@@ -3,6 +3,10 @@ SCG - Scheming Cow Graphs
 
 Graphing Library using MooTools and Raphael.
 
+Provides Line, Pie, Bar, Stacked Bar and Weird and wonderful variations of charts.
+
+![Screenshot](http://www.datalas.com/images/scg.png)
+
 Note:
 
 The SCG graphs require MooTools, MooTools-more (probably) and Raphaeljs to be loaded
@@ -10,6 +14,7 @@ before the SCG libraries are.
 
 MooTools - www.mootools.net    v1.4.5 or Higher
 RaphaelJS - www.raphaeljs.com  v2.1.0 or Higher
+
 
 How to use
 -------
