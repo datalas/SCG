@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3c//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml11/DTD/xhmtml11-strict.dtd">
+<html>
+<head>
+	<script src="../mootools.js" tpe="text/javascript"></script>
+	<script src="../mootools-more.js" tpe="text/javascript"></script>
+	<script src="../raphael.js" tpe="text/javascript"></script>
+	<script src="../Source/format.js" tpe="text/javascript"></script>
+	<script src="../Source/chart.js" tpe="text/javascript"></script>
+	<script src="../Source/barchart.js" tpe="text/javascript"></script>
+	<script src="../Source/linechart.js" tpe="text/javascript"></script>
+	<script src="../Source/piechart.js" tpe="text/javascript"></script>
+	<script src="../Source/heatchart.js" tpe="text/javascript"></script>
+	<script src="../Source/heatradar.js" tpe="text/javascript"></script>
+	<script src="../Source/piearc.js" tpe="text/javascript"></script>
+	<script src="../Source/radar.js" tpe="text/javascript"></script>
+	<title>Testy</title>
+</head>
+<body>
+	<div id='test1'></div>
+<script>
+window.addEvent( 'domready', function(){
+	new SCGPieArc( 'test1', {
+		height: 400,
+		gutter: {
+			top: 100,
+			left: 60,
+			right: 30,
+			bottom: 100
+		},
+		data: [ 
+			[1,  [3,5,1,2,3]],
+			[3,  [9,7,5,6,7]],
+			[1,  [2,4,7,9,3]],
+			[5,  [2,7,2,5,3]],
+			[2,  [4,5,8,3,5]],
+			[3,  [2,2,6,7,4]],
+			[12, [6,7,3,4,5]],
+			[14, [5,3,2,4,3]],
+			[15, [1,2,4,6,5]],
+			[14, [11,2,3,5,6]]
+		],
+		labels: [
+			[ 'Bertie', [ 'a', 'b', 'c', 'd', 'e' ] ],
+			[ 'Jeff',   [ 'a', 'b', 'c', 'd', 'e' ] ],
+			[ 'Bill',   [ 'c', 'b', 'a', 'f', 'e' ] ],
+			[ 'Fred',   [ 'a', 'b', 'c', 'd', 'e' ] ],
+			[ 'Ernie',  [ 'a', 'b', 'c', 'd', 'e' ] ],
+			[ 'Dorris', [ 'g', 'b', 'c', 'd', 'e' ] ],
+			[ 'Henry',  [ 'a', 'b', 'c', 'd', 'e' ] ],
+			[ 'Norris', [ 'f', 'e', 'c', 'd', 'b' ] ],
+			[ 'Edward', [ 'a', 'f', 'c', 'e', 'd' ] ],
+			[ 'Derek',  [ 'c', 'e', 'a', 'd', 'f' ] ]
+		]
+	});
+
+
+
+} );
+
+</script>
+
+</body>
+</html>

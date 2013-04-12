@@ -1,43 +1,22 @@
 <!DOCTYPE html PUBLIC "-//W3c//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml11/DTD/xhmtml11-strict.dtd">
 <html>
 <head>
-	<script src="mootools.js" tpe="text/javascript"></script>
-	<script src="mootools-more.js" tpe="text/javascript"></script>
-	<script src="raphael.js" tpe="text/javascript"></script>
-	<script src="Source/format.js" tpe="text/javascript"></script>
-	<script src="Source/chart.js" tpe="text/javascript"></script>
-	<script src="Source/barchart.js" tpe="text/javascript"></script>
-	<script src="Source/linechart.js" tpe="text/javascript"></script>
-	<script src="Source/piechart.js" tpe="text/javascript"></script>
-	<script src="Source/heatchart.js" tpe="text/javascript"></script>
-	<script src="Source/heatradar.js" tpe="text/javascript"></script>
-	<script src="Source/piearc.js" tpe="text/javascript"></script>
-	<script src="Source/radar.js" tpe="text/javascript"></script>
+	<script src="../mootools.js" tpe="text/javascript"></script>
+	<script src="../mootools-more.js" tpe="text/javascript"></script>
+	<script src="../raphael.js" tpe="text/javascript"></script>
+	<script src="../Source/format.js" tpe="text/javascript"></script>
+	<script src="../Source/chart.js" tpe="text/javascript"></script>
+	<script src="../Source/barchart.js" tpe="text/javascript"></script>
+	<script src="../Source/linechart.js" tpe="text/javascript"></script>
+	<script src="../Source/piechart.js" tpe="text/javascript"></script>
+	<script src="../Source/heatchart.js" tpe="text/javascript"></script>
+	<script src="../Source/heatradar.js" tpe="text/javascript"></script>
+	<script src="../Source/piearc.js" tpe="text/javascript"></script>
+	<script src="../Source/radar.js" tpe="text/javascript"></script>
 	<title>Testy</title>
 </head>
 <body>
-	<h3>Standard Line Chart</h3>
 	<div id='test'></div>
-	<h3>Multi Line - Line Chart</h3>
-	<div id='test1'></div>
-	<h3>Bar Chart</h3>
-	<div id='test2'></div>
-	<h3>Bar Chart (with negative numbers)</h3>
-	<div id='test3'></div>
-	<h3>Stacked Bar Chart</h3>
-	<div id='test4'></div>
-	<h3>Stacked Bar Chart (with negative numbers)</h3>
-	<div id='test5'></div>
-	<h3>Heat Chart</h3>
-	<div id='test6'></div>
-	<h3>Radar</h3>
-	<div id='test7'></div>
-	<h3>Heat Radar</h3>
-	<div id='test8'></div>
-	<h3>Pie Chart</h3>
-	<div id='test9'></div>
-	<h3>Pie Arc</h3>
-	<div id='test10'></div>
 <script>
 window.addEvent( 'domready', function(){
 
@@ -47,7 +26,7 @@ window.addEvent( 'domready', function(){
 		data: [ 112312312330, -212312310, 12312312330, -1342424344, 13245253329, 432423447, 1123123339, 2123335433, -1213123473 ],
 		labels: [ 'label1', 'label2', 'label3', 'label4', 'label5', 'label6', 'label7', 'label8', 'label9' ]
 	}); 
-
+return;
 	new SCGBarchart( 'test2', {
 		yaxis: 'thingies',
 		data: [ 10, 20, 30, 14, 19, 47, 139, 233, 123 ],

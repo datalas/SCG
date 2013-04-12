@@ -1,64 +1,25 @@
 <!DOCTYPE html PUBLIC "-//W3c//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml11/DTD/xhmtml11-strict.dtd">
 <html>
 <head>
-	<script src="mootools.js" tpe="text/javascript"></script>
-	<script src="mootools-more.js" tpe="text/javascript"></script>
-	<script src="raphael.js" tpe="text/javascript"></script>
-	<script src="Source/format.js" tpe="text/javascript"></script>
-	<script src="Source/chart.js" tpe="text/javascript"></script>
-	<script src="Source/barchart.js" tpe="text/javascript"></script>
-	<script src="Source/linechart.js" tpe="text/javascript"></script>
-	<script src="Source/piechart.js" tpe="text/javascript"></script>
-	<script src="Source/heatchart.js" tpe="text/javascript"></script>
-	<script src="Source/heatradar.js" tpe="text/javascript"></script>
-	<script src="Source/piearc.js" tpe="text/javascript"></script>
-	<script src="Source/radar.js" tpe="text/javascript"></script>
+	<script src="../mootools.js" tpe="text/javascript"></script>
+	<script src="../mootools-more.js" tpe="text/javascript"></script>
+	<script src="../raphael.js" tpe="text/javascript"></script>
+	<script src="../Source/format.js" tpe="text/javascript"></script>
+	<script src="../Source/chart.js" tpe="text/javascript"></script>
+	<script src="../Source/barchart.js" tpe="text/javascript"></script>
+	<script src="../Source/linechart.js" tpe="text/javascript"></script>
+	<script src="../Source/piechart.js" tpe="text/javascript"></script>
+	<script src="../Source/heatchart.js" tpe="text/javascript"></script>
+	<script src="../Source/heatradar.js" tpe="text/javascript"></script>
+	<script src="../Source/piearc.js" tpe="text/javascript"></script>
+	<script src="../Source/radar.js" tpe="text/javascript"></script>
 	<title>Testy</title>
 </head>
 <body>
-	<h3>Standard Line Chart</h3>
-	<div id='test'></div>
-	<h3>Multi Line - Line Chart</h3>
 	<div id='test1'></div>
-	<h3>Bar Chart</h3>
-	<div id='test2'></div>
-	<h3>Bar Chart (with negative numbers)</h3>
-	<div id='test3'></div>
-	<h3>Stacked Bar Chart</h3>
-	<div id='test4'></div>
-	<h3>Stacked Bar Chart (with negative numbers)</h3>
-	<div id='test5'></div>
-	<h3>Heat Chart</h3>
-	<div id='test6'></div>
-	<h3>Radar</h3>
-	<div id='test7'></div>
-	<h3>Heat Radar</h3>
-	<div id='test8'></div>
-	<h3>Pie Chart</h3>
-	<div id='test9'></div>
-	<h3>Pie Arc</h3>
-	<div id='test10'></div>
 <script>
 window.addEvent( 'domready', function(){
 
-	new SCGLinechart( 'test', {
-		yaxis: 'thingies',
-		//data: [ 10, 20, 30, 14, 19, 47, 139, 233, 123 ],
-		data: [ 112312312330, -212312310, 12312312330, -1342424344, 13245253329, 432423447, 1123123339, 2123335433, -1213123473 ],
-		labels: [ 'label1', 'label2', 'label3', 'label4', 'label5', 'label6', 'label7', 'label8', 'label9' ]
-	}); 
-
-	new SCGBarchart( 'test2', {
-		yaxis: 'thingies',
-		data: [ 10, 20, 30, 14, 19, 47, 139, 233, 123 ],
-		labels: [ 'label1', 'label2', 'label3', 'label4', 'label5', 'label6', 'label7', 'label8', 'label9' ]
-	});
-
-	new SCGBarchart( 'test3', {
-		yaxis: 'thingies',
-		data: [ 10, -20, 30, -14, 19, 47, 139, 233, 123, 55, -2, 73, 18, 45, 22, 100, 28, 156 ],
-		labels: [ 'label1', 'label2', 'label3', 'label4', 'label5', 'label6', 'label7', 'label8', 'label9', 'label10', 'label11', 'label12', 'label13', 'label14', 'label15', 'label16', 'label17', 'label18' ]
-	});
 
 	new SCGLinechart( 'test1', {
 		yaxis: 'thingies',
@@ -76,42 +37,7 @@ window.addEvent( 'domready', function(){
 		labels: [ 'label1', 'label2', 'label3', 'label4', 'label5', 'label6', 'label7', 'label8', 'label9' ]
 	}); 
 
-
-	new SCGBarchart( 'test4', {
-		yaxis: 'thingies',
-		data: [ 
-			[ 10, 26, 15  ],
-			[ 20, 23, 14  ],
-			[ 30, 7, 62   ],
-			[ 14, 12, 8  ],
-			[ 19, 36, 73  ],
-			[ 47, 5, 125   ],
-			[ 139, 17, 30 ],
-			[ 233, 0, 14  ],
-			[ 123, 179, 20 ]
-		],
-		labels: [ 'label1', 'label2', 'label3', 'label4', 'label5', 'label6', 'label7', 'label8', 'label9' ],
-		xaxis: [ 'Axis1', 'Axis2','Axis3','Axis4','Axis5','Axis6','Axis7','Axis8','Axis9' ]
-	});  
-
-	new SCGBarchart( 'test5', {
-		yaxis: 'thingies',
-		invertNegative: 1,
-		data: [ 
-			[ 10, -26  ],
-			[ 20, -23  ],
-			[ 30, -7   ],
-			[ 14, -12  ],
-			[ 19, -36  ],
-			[ 47, -5   ],
-			[ 139, -17 ],
-			[ 233, -0  ],
-			[ 123, -179 ]
-		],
-		labels: [ 'label1', 'label2', 'label3', 'label4', 'label5', 'label6', 'label7', 'label8', 'label9' ],
-		xaxis: [ 'Axis1', 'Axis2','Axis3','Axis4','Axis5','Axis6','Axis7','Axis8','Axis9' ]
-	});  
-
+return;
 
 	new SCGHeatchart( 'test6', {
 		gutter: {

@@ -11,6 +11,51 @@ before the SCG libraries are.
 MooTools - www.mootools.net    v1.4.5 or Higher
 RaphaelJS - www.raphaeljs.com  v2.1.0 or Higher
 
+How to use
+-------
+
+SCGCharts are designed to be very lightweight to include in a HTML page, once the 
+source files are included a chart can be added to a HTML div element very simply
+
+	<div id='test1'></div>
+
+	... later
+
+	<script type='text/javascript'>
+	window.addEvent( 'domready', function(){
+		new SCGBarchart( 'test1', {
+			yaxis: 'thingies',
+			data: [ 
+				10, 
+				20, 
+				30, 
+				14, 
+				19, 
+				47, 
+				139, 
+				233, 
+				123 
+			],
+			labels: [ 
+				'label1', 
+				'label2', 
+				'label3', 
+				'label4', 
+				'label5', 
+				'label6', 
+				'label7', 
+				'label8', 
+				'label9' 
+			]
+		});
+	});
+	</script>
+
+And that's it.
+
+Other types include subtle variations, please check the samples for more information.
+
+
 -------
 
 Copyright (C) 2012 Darren Taylor ([http://www.datalas.com/](http://www.datalas.com/))
