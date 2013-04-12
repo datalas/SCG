@@ -1,5 +1,8 @@
 /* 
 ---
+
+name: SCGChart
+
 description: SCGChart Class.  Defines a base class for SCG Charts
 
 licence: See licence.txt
@@ -13,6 +16,7 @@ requires:
 
 provides: [SCGChart]
 
+...
 */
 
 var SCGChart = new Class({

@@ -1,6 +1,9 @@
-/* 
+/*
 ---
-description: SCGHeatchart Class.  Defines a child class for Radar charts
+
+name: SCGRadar
+
+description: SCGRadar Class.  Defines a child class for Radar charts
 
 licence: See licence.txt
 
@@ -14,6 +17,7 @@ requires:
 
 provides: [SCGRadar]
 
+...
 */
 
 var SCGRadar = new Class({

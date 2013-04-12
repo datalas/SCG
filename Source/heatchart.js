@@ -1,5 +1,8 @@
 /* 
 ---
+
+name: SCGHeatchart
+
 description: SCGHeatchart Class.  Defines a child class for HeatCharts
 
 licence: See licence.txt
@@ -14,6 +17,7 @@ requires:
 
 provides: [SCGHeatchart]
 
+...
 */
 
 var SCGHeatchart = new Class({

@@ -1,6 +1,9 @@
 /* 
 ---
-description: SCGHeatchart Class.  Defines a child class for LineChart charts
+
+name: SCGLinechart
+
+description: SCGLinechart Class.  Defines a child class for LineChart charts
 
 licence: See licence.txt
 
@@ -14,6 +17,7 @@ requires:
 
 provides: [SCGLinechart]
 
+...
 */
 
 var SCGLinechart = new Class({

@@ -1,5 +1,8 @@
 /* 
 ---
+
+name: SCGFormat
+
 description: SCG Formatting functions.  Used to provide formatting for SCG Charts
 
 licence: See licence.txt
@@ -11,6 +14,7 @@ requires:
 
 provides: [SCGFormatValue, SCGFormatAxis, SCGFormat]
 
+...
 */
 
 function SCGFormatValue( value, store ){

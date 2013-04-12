@@ -1,6 +1,9 @@
 /* 
 ---
-description: SCGHeatchart Class.  Defines a child class for HeatRadar charts
+
+name: SCGHeatradar
+
+description: SCGHeatradar Class.  Defines a child class for HeatRadar charts
 
 licence: See licence.txt
 
@@ -14,6 +17,7 @@ requires:
 
 provides: [SCGHeatRadar]
 
+...
 */
 
 var SCGHeatRadar = new Class({

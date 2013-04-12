@@ -1,6 +1,9 @@
 /* 
 ---
-description: SCGHeatchart Class.  Defines a child class for PieArc charts
+
+name: SCGPieArc
+
+description: SCGPieArc Class.  Defines a child class for PieArc charts
 
 licence: See licence.txt
 
@@ -14,6 +17,7 @@ requires:
 
 provides: [SCGPieArc]
 
+...
 */
 
 var SCGPieArc = new Class({

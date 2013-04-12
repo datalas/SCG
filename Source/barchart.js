@@ -1,5 +1,9 @@
 /* 
+
 ---
+
+name: SCG Barchart
+
 description: SCG Barchart Class.  Defines a child class for BarCharts
 
 licence: See licence.txt
@@ -14,6 +18,7 @@ requires:
 
 provides: [SCGBarchart]
 
+...
 */
 
 var SCGBarchart = new Class({
