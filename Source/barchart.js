@@ -24,6 +24,9 @@ provides: [SCGBarchart]
 var SCGBarchart = new Class({
 Implements: [ Events, Options ],
 Extends: SCGChart,
+options: {
+	singleColour: false
+},
 initialize: function( obj, options ){
 	this.parent( obj, options );
 	this.element = $(obj);
@@ -136,7 +139,11 @@ drawBars: function(){
 
 	} else {
 		Array.each( this.options.data, function( value, position ){
-			var bar = this.drawBar( value, this.points.x[position], this.chart.bottom, this.points.xLabels[ position ], this.colours[ position ], this.alphaColours[ position ] );
+			var colour = position;
+			if ( this.options.singleColour ){
+				colour = 0;
+			}
+			var bar = this.drawBar( value, this.points.x[position], this.chart.bottom, this.points.xLabels[ position ], this.colours[ colour ], this.alphaColours[ colour ] );
 			this.bars.push( bar );	
 		}, this );
 	}
