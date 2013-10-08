@@ -35,17 +35,7 @@ options:{
 
 	periodical: function(){ },
 	complete: function(){ },
-	translateLabels: function( label ){ return label; },
-	styles: {
-		markLabel: {
-			'stroke': '#0000ff',
-			'fill': '#0000ff'
-		},
-		selection: {
-			'fill':'#d0d0ff', 
-			'opacity': 0.6
-		}
-	}
+	translateLabels: function( label ){ return label; }
 },
 initialize: function( obj, options ){
 	this.parent( obj, options );
@@ -74,12 +64,6 @@ initialize: function( obj, options ){
 		}
 	}).periodical( this.options.interval, this );
 
-	if( this.options.selectable ){
-		this.element.addEvent('mousedown', this.startSelect.bind( this ) );
-		this.element.addEvent('mouseleave', this.stopSelect.bind( this ) );
-		this.element.addEvent('mouseup', this.endSelect.bind(this) );
-		this.element.addEvent('mousemove', this.moveSelect.bind(this) );
-	}
 },
 redraw: function(){
 	/* check whether we need to adjust the scale of our graph */
@@ -361,157 +345,6 @@ clickableGrid: function(){
 		segment.hover( (function(){
 		}).bind(this));
 	}, this );
-},
-
-/* Selection code, allowing a user to select bits of the chart */
-getSelectionPosition: function(e){
-	return {
-		x: e.page.x - this.element.getCoordinates().left - this.chart.left,
-		y: e.page.y - this.element.getCoordinates().top - this.chart.top
-	}
-},
-makeSelection: function(x){
-	if ( !x ){
-		return;
-	}
-
-	x += this.chart.left;
-	if ( !this._selection ){
-		this._selection = this.paper.rect( x, this.chart.top, this.xStep, this.chart.height ).attr( this.options.styles.selection ).toFront();
-	}
-	this._selection.attr({ 
-		x: x,
-		width: 1
-	});	
-},
-markRange: function( start, stop ){
-	var startPosition = 0;
-	var stopPosition = 0;
-
-	Array.each( this.points.x, function( point, index ){
-		if ( this.options.labels[ index ] == start ){
-			startPosition = index;
-		}
-		if ( this.options.labels[ index ] == stop ){
-			stopPosition = index;
-		}
-	}, this);
-
-	this.makeSelection( startPosition * this.xStep );
-	
-	startPosition = parseInt( startPosition ) * this.xStep;
-	stopPosition  = parseInt( stopPosition ) * this.xStep;
-
-	if ( this._selection ){
-		this._selection.attr({ 
-			x: (Math.min( startPosition, stopPosition )) + this.chart.left,
-			width: Math.max( 
-				startPosition - stopPosition,
-				stopPosition - startPosition,
-				0.1
-			)
-		});
-	}
-},
-startSelect: function(e){
-	e.stop();
-
-	this._startSelection = this.getSelectionPosition(e);
-
-	/* rationalise X so that it starts at the nearest point on the graph */
-	this._startSelection.x = this.xStep * ( parseInt( this._startSelection.x / this.xStep ));
-
-	this.makeSelection( this._startSelection.x  );
-
-	this.fireEvent('selectstart');
-},
-endSelect: function(e){
-	e.stop();
-
-	/* where is the mouse now? */
-	var position = this.getSelectionPosition(e);	
-
-	/* where did we start ? */
-	var startPosition = Math.min( this._startSelection.x, position.x );
-	var endPosition   = Math.max( this._startSelection.x, position.x );
-
-	this._startSelection = null;
-
-	this.fireEvent('selectend', [
-		{
-			start: startPosition,
-			stop:  endPosition,
-			startLabel: this.options.labels[ parseInt( startPosition / this.xStep ) ],
-			endLabel: this.options.labels[ parseInt( endPosition / this.xStep ) ]
-		}
-	] );
-
-},
-moveSelect: function(e){
-	var pos = this.getSelectionPosition(e);
-
-	if ( 
-		pos.x > 0 
-		&&
-		pos.x < this.chart.width
-		&&
-		pos.y > 0
-		&&
-		pos.y < this.chart.height
-	){
-
-
-		/* we are within the clickable area of the graph */
-		if ( this._selection && this._startSelection ){
-			this._selection.attr({ 
-				x: (Math.min( this._startSelection.x, pos.x )) + this.chart.left,
-				width: Math.max( 
-					pos.x - this._startSelection.x,
-					this._startSelection.x - pos.x,
-					0.1
-				)
-			});
-		}
-	}
-},
-stopSelect: function(e){
-	e.stop();
-	if ( this._startSelection && this._selection ){
-		this._selection.remove();
-		this._selection = null;
-	}
-
-	this._startSelection = null;
-
-	this.fireEvent('selectcancel');
-},
-
-
-
-markLabel: function( label ){
-	if ( this.labelMark ){
-		this.labelMark.remove();
-	}
-	
-	if ( label ){
-		Array.each( this.points.x, function( point, index ){
-			if ( this.options.labels[ index ] == label ){
-				var pointWidth  = this.xStep / 2;
-				var pointHeight = 5;
-				this.labelMark = this.paper.path( [ 
-					'M', point, this.chart.bottom, 
-					'L', point + pointWidth, this.chart.bottom + pointHeight,
-					'H', point - pointWidth,
-					'L', point, this.chart.bottom,
-					'V', this.chart.top,
-					'L', point - pointWidth, this.chart.top - pointHeight,
-					'H', point + pointWidth,
-					'L', point, this.chart.top 
-
-				] ).attr( this.options.styles.markLabel);
-			}
-		}, this );
-	}
 },
 
 tailKeys: function(){

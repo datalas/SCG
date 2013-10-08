@@ -81,10 +81,21 @@ options: {
 		[169,83,171], [227,106,105], [255,103, 0], [146, 22, 34], [255,192, 81], 
 		[ 51,203,130], [ 46,134, 34]
 	],
+	styles: {
+		markLabel: {
+			'stroke': '#0000ff',
+			'fill': '#0000ff'
+		},
+		selection: {
+			'fill':'#d0d0ff', 
+			'opacity': 0.6
+		}
+	},
 	min: 0,
 	max: 1,
 	startAtZero: true,
 	key: true,
+	selectable: false,
 	persistantColour: false,/* Option to enforce persistant colouring for different series */
 	format: SCGFormat	/* Used to denote additional formatting functions for the y Axis */
 },
@@ -103,6 +114,14 @@ initialize: function( obj, options ){
 			store: {}  /* A storage option for the axis / value pair */
 		}
 	}
+
+	if( this.options.selectable ){
+		$(obj).addEvent('mousedown', this.startSelect.bind( this ) );
+		$(obj).addEvent('mouseleave', this.stopSelect.bind( this ) );
+		$(obj).addEvent('mouseup', this.endSelect.bind(this) );
+		$(obj).addEvent('mousemove', this.moveSelect.bind(this) );
+	}
+
 },
 createColours: function(){
 	var a = [];
@@ -533,7 +552,160 @@ labels: function( newLabels ){
 
 redraw: function(){
 	/* Virtual method to be overloaded */
-}
+},
+
+/* Selection code, allowing a user to select bits of the chart */
+getSelectionPosition: function(e){
+	return {
+		x: e.page.x - this.element.getCoordinates().left - this.chart.left,
+		y: e.page.y - this.element.getCoordinates().top - this.chart.top
+	}
+},
+makeSelection: function(x){
+	if ( !x ){
+		return;
+	}
+
+	x += this.chart.left;
+	if ( !this._selection ){
+		this._selection = this.paper.rect( x, this.chart.top, this.xStep, this.chart.height ).attr( this.options.styles.selection ).toFront();
+	}
+	this._selection.attr({ 
+		x: x,
+		width: 1
+	});	
+},
+markRange: function( start, stop ){
+	var startPosition = 0;
+	var stopPosition = 0;
+
+	Array.each( this.points.x, function( point, index ){
+		if ( this.options.labels[ index ] == start ){
+			startPosition = index;
+		}
+		if ( this.options.labels[ index ] == stop ){
+			stopPosition = index;
+		}
+	}, this);
+
+	this.makeSelection( startPosition * this.xStep );
+	
+	startPosition = parseInt( startPosition ) * this.xStep;
+	stopPosition  = parseInt( stopPosition ) * this.xStep;
+
+	if ( this._selection ){
+		this._selection.attr({ 
+			x: (Math.min( startPosition, stopPosition )) + this.chart.left,
+			width: Math.max( 
+				startPosition - stopPosition,
+				stopPosition - startPosition,
+				0.1
+			)
+		});
+	}
+},
+startSelect: function(e){
+	e.stop();
+
+	this._startSelection = this.getSelectionPosition(e);
+
+	/* rationalise X so that it starts at the nearest point on the graph */
+	this._startSelection.x = this.xStep * ( parseInt( this._startSelection.x / this.xStep ));
+
+	this.makeSelection( this._startSelection.x  );
+
+	this.fireEvent('selectstart');
+},
+endSelect: function(e){
+	e.stop();
+
+	/* where is the mouse now? */
+	var position = this.getSelectionPosition(e);	
+
+	/* where did we start ? */
+	var startPosition = Math.min( this._startSelection.x, position.x );
+	var endPosition   = Math.max( this._startSelection.x, position.x );
+
+	this._startSelection = null;
+
+	var startElement = parseInt( startPosition / this.xStep );
+	var endElement   = parseInt( endPosition / this.xStep );
+
+	this.fireEvent('selectend', [
+		{
+			start: startPosition,
+			stop:  endPosition,
+			startLabel: this.options.labels[ startElement ],
+			endLabel: this.options.labels[ endElement ],
+			startElement: startElement,
+			endElement: endElement,
+			data: this.options.data.splice( startElement, (endElement - startElement) + 1 )
+		}
+	] );
+},
+moveSelect: function(e){
+	var pos = this.getSelectionPosition(e);
+
+	if ( 
+		pos.x > 0 
+		&&
+		pos.x < this.chart.width
+		&&
+		pos.y > 0
+		&&
+		pos.y < this.chart.height
+	){
+		/* we are within the clickable area of the graph */
+		if ( this._selection && this._startSelection ){
+			var width = Math.max( pos.x - this._startSelection.x,	this._startSelection.x - pos.x,	0.1 );
+			var newWidth = this.xStep * ( parseInt( width / this.xStep ) + 1 );
+			this._selection.attr({ 
+				x: ( parseInt( Math.min( this._startSelection.x, pos.x ) / this.xStep ) * this.xStep ) + this.chart.left,
+				width: newWidth
+			});
+		}
+	}
+},
+stopSelect: function(e){
+	e.stop();
+	if ( this._startSelection && this._selection ){
+		this._selection.remove();
+		this._selection = null;
+	}
+
+	this._startSelection = null;
+
+	this.fireEvent('selectcancel');
+},
+
+
+
+markLabel: function( label ){
+	if ( this.labelMark ){
+		this.labelMark.remove();
+	}
+	
+	if ( label ){
+		Array.each( this.points.x, function( point, index ){
+			if ( this.options.labels[ index ] == label ){
+				var pointWidth  = this.xStep / 2;
+				var pointHeight = 5;
+				this.labelMark = this.paper.path( [ 
+					'M', point, this.chart.bottom, 
+					'L', point + pointWidth, this.chart.bottom + pointHeight,
+					'H', point - pointWidth,
+					'L', point, this.chart.bottom,
+					'V', this.chart.top,
+					'L', point - pointWidth, this.chart.top - pointHeight,
+					'H', point + pointWidth,
+					'L', point, this.chart.top 
+
+				] ).attr( this.options.styles.markLabel);
+			}
+		}, this );
+	}
+},
+
 
 });
 
