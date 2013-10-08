@@ -24,9 +24,6 @@ provides: [SCGBarchart]
 var SCGBarchart = new Class({
 Implements: [ Events, Options ],
 Extends: SCGChart,
-options: {
-	singleColour: false
-},
 initialize: function( obj, options ){
 	this.parent( obj, options );
 	this.element = $(obj);
@@ -140,7 +137,7 @@ drawBars: function(){
 	} else {
 		Array.each( this.options.data, function( value, position ){
 			var colour = position;
-			if ( this.options.singleColour ){
+			if ( this.options.persistantColour ){
 				colour = 0;
 			}
 			var bar = this.drawBar( value, this.points.x[position], this.chart.bottom, this.points.xLabels[ position ], this.colours[ colour ], this.alphaColours[ colour ] );

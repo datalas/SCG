@@ -85,6 +85,7 @@ options: {
 	max: 1,
 	startAtZero: true,
 	key: true,
+	persistantColour: false,/* Option to enforce persistant colouring for different series */
 	format: SCGFormat	/* Used to denote additional formatting functions for the y Axis */
 },
 initialize: function( obj, options ){
@@ -139,10 +140,15 @@ addKey: function( label ){
 			this.keys.columns[ this.keys.column ] = [];
 		}
 
+		var colour = label;
+		if ( this.options.persistantColour ){
+			colour = 0;
+		}
+
 		var key = {
 			label: this.options.labels[label],
 			text: this.paper.text( this.labelX + 15, this.labelY, this.options.labels[label] ).attr({'text-anchor': 'start', 'font-size': 12}),
-			blob: this.paper.circle( this.labelX, this.labelY, 5 ).attr({ 'stroke-width': 1, 'stroke': this.colours[label], 'fill': this.colours[label], 'fill-opacity': 0.4 })
+			blob: this.paper.circle( this.labelX, this.labelY, 5 ).attr({ 'stroke-width': 1, 'stroke': this.colours[colour], 'fill': this.colours[colour], 'fill-opacity': 0.4 })
 		};
 
 		key.width = 30 + key.text.getBBox().width;
