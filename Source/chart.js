@@ -210,15 +210,47 @@ setDimensions: function(){
 },
 setRange: function()
 {
+	var range = this.getRange( this.options.data, this.chart );
+	this.stacked = range.stacked;	
+	this.chart.zero = y.zero;
+
+	var dirty = false;
+
+	if ( this.y ){
+		/* we already have a range, has it changed any ? */
+		if ( 
+			this.y.max != range.ymax 
+			|| 
+			this.y.points != range.points
+			||
+			this.y.min != range.ymin
+			||
+			this.y.npoints != range.npoints
+			||
+			this.y.scale != range.scale
+			||
+			this.y.step != range.step
+		){
+			dirty = true;
+		}
+	} 
+
+	this.y = range;
+
+	return dirty;
+},
+getRange: function( data, chart )
+{
 	y = {};
+	var stacked = false;
 
 	/* determine whether this is a stacked graph or otherwise */
-	switch( typeOf( this.options.data[0] ) ){
+	switch( typeOf( data[0] ) ){
 	case 'array':
-		this.stacked = true;
+		stacked = true;
 		var highest = [];
 		var lowest = [];
-		this.options.data.each( function( point ){
+		data.each( function( point ){
 			var h = 0;
 			var l = 0;
 			Array.each( point, function( p ){
@@ -238,10 +270,10 @@ setRange: function()
 		break
 	case 'number':
 	case 'string':
-		this.stacked = false;
+		stacked = false;
 
-		y.min = Math.floor( this.options.data.map( function(point){ return Math.floor( point ) } ).min() );
-		y.max = Math.ceil( this.options.data.map( function(point){ return Math.ceil( point ) } ).max() );
+		y.min = Math.floor( data.map( function(point){ return Math.floor( point ) } ).min() );
+		y.max = Math.ceil( data.map( function(point){ return Math.ceil( point ) } ).max() );
 
 		break;
 	};
@@ -282,47 +314,26 @@ setRange: function()
 		npoints++;
 	}
 
-	var zeroheight = parseInt((this.chart.height/(ymax - ymin)) * ( - ymin ));
-	this.chart.zero = this.chart.bottom - zeroheight;
+	var zeroheight = parseInt((chart.height/(ymax - ymin)) * ( - ymin ));
+	var zero = chart.bottom - zeroheight;
 
 	/* this.y.scale gives us the number of units we have per step (in order to have the correct number of steps */
-	var step = Math.ceil( (this.chart.zero - this.chart.top ) / (points+1) );
+	var step = Math.ceil( (zero - chart.top ) / (points+1) );
 
-	var dirty = false;
-
-	if ( this.y ){
-		/* we already have a range, has it changed any ? */
-		if ( 
-			this.y.max != ymax 
-			|| 
-			this.y.points != points
-			||
-			this.y.min != ymin
-			||
-			this.y.npoints != npoints
-			||
-			this.y.scale != scale
-			||
-			this.y.step != step
-		){
-			dirty = true;
-		}
-	} 
-
-	this.y = {
+	y = {
 		max: ymax,
 		points: points,
 		min: ymin,
 		npoints: npoints,
 		scale: scale,
-		step: step
+		step: step,
+		zero: zero,
+		stacked: stacked
 	};
 
-	return dirty;
+	return y;
 },
 drawAxis: function(){
-	/* draw both the X and Y axis */
-	
 	/* it is possible that we will want to move the bottom of our graph */
 	/* this would be because of negative numbers */
 
@@ -333,16 +344,30 @@ drawAxis: function(){
 
 	this.axis = this.paper.set();
 
-	this.grid = {
-		xAxis: this.paper.path( 'M' + this.chart.left + ',' + this.chart.bottom + 'L' + this.chart.left + ',' + this.chart.top ).attr(this.options.lines.axis),
-		yAxis: this.paper.path( 'M' + this.chart.left + ',' + this.chart.zero + 'L' + this.chart.right + ',' + this.chart.zero ).attr(this.options.lines.axis)
+	var chartAxis = this.drawChartAxis( this.chart, this.y );
+
+	/* preserve some of the bits from the axis we just created */
+	this.grid   = chartAxis.grid;
+	this.points = chartAxis.points;
+	this.labelY = chartAxis.labelY;
+	this.labelX = chartAxis.labelX;
+	this.points = chartAxis.points;
+},
+drawChartAxis: function( chart, y )
+{
+	/* draw both the X and Y axis */
+	var chartAxis = {};
+	
+	chartAxis.grid = {
+		xAxis: this.paper.path( 'M' + chart.left + ',' + chart.bottom + 'L' + chart.left + ',' + chart.top ).attr(this.options.lines.axis),
+		yAxis: this.paper.path( 'M' + chart.left + ',' + chart.zero + 'L' + chart.right + ',' + chart.zero ).attr(this.options.lines.axis)
 	};
 
 	/* add the axis lines to the axis set (so we can change / update it's ordering) */
-	this.axis.push( this.grid.xAxis );
-	this.axis.push( this.grid.yAxis );
+	this.axis.push( chartAxis.grid.xAxis );
+	this.axis.push( chartAxis.grid.yAxis );
 
-	this.points = {
+	chartAxis.points = {
 			x: [],
 			y: [],
 			xLabels: [],
@@ -350,15 +375,15 @@ drawAxis: function(){
 	};
 
 	/* draw the X axis */
-	this.xStep = this.chart.width / this.numberOfPoints;
+	this.xStep = chart.width / this.numberOfPoints;
 
 	var label = 0;
-	this.labelY = this.chart.top;
-	this.labelX = this.width - this.options.gutter.right + 30;
+	chartAxis.labelY = chart.top;
+	chartAxis.labelX = this.width - this.options.gutter.right + 30;
 
-	for ( var i = this.chart.left; i < this.chart.width + this.chart.left; i += this.xStep ){
-		this.axis.push( this.paper.path( ['M', i, this.chart.bottom, 'L', i, this.chart.bottom + 5 ] ).attr(this.options.lines.grid ) ); 
-		this.points.x.push( i );
+	for ( var i = chart.left; i < chart.width + chart.left; i += this.xStep ){
+		this.axis.push( this.paper.path( ['M', i, chart.bottom, 'L', i, chart.bottom + 5 ] ).attr(this.options.lines.grid ) ); 
+		chartAxis.points.x.push( i );
 	}
 
 	/* and draw the Y axis.  This is subtly different as we shall start at the zero point and head upwards */
@@ -371,57 +396,75 @@ drawAxis: function(){
 	yAxisLabel = this.options.yaxis;
 
 	if ( this.yFormat.axis ){
-		yAxisLabel = this.yFormat.axis( this.y.min, this.y.max, yAxisLabel, this.yFormat.store );
+		yAxisLabel = this.yFormat.axis( y.min, y.max, yAxisLabel, this.yFormat.store );
 	}
 
-	for ( var i = 0 ; i <= (this.y.points+1) ; i++ ){
-		var y = this.chart.zero - ( i * this.y.step );
-		this.points.y.push( y );
+	for ( var i = 0 ; i <= (y.points+1) ; i++ ){
+		var ny = chart.zero - ( i * y.step );
+		chartAxis.points.y.push( ny );
 
-		var labelValue = ( i * this.y.scale );
+		var labelValue = ( i * y.scale );
 		if ( this.yFormat.axis ){
 			labelValue = this.yFormat.value( labelValue, this.yFormat.store );
 		}
 
 		if ( i == 0 ){
-			var zeroLabel = this.paper.text( this.options.gutter.left - 5, y, 0  ).attr({'text-anchor': 'end', 'font-weight': 'bold', 'font-size': 13 });
+			var zeroLabel = this.paper.text( this.options.gutter.left - 5, ny, 0  ).attr({'text-anchor': 'end', 'font-weight': 'bold', 'font-size': 13 });
 			this.axis.push( zeroLabel );
-			this.points.yLabels.push( zeroLabel );
+			chartAxis.points.yLabels.push( zeroLabel );
 		} else {
-			this.axis.push( this.paper.path( ['M', this.options.gutter.left, y, 'L', this.options.gutter.left - 5, y ] ).attr(this.options.lines.grid) ); 
-			var label = this.paper.text( this.options.gutter.left - 5, y, labelValue  ).attr({'text-anchor': 'end'});
+			this.axis.push( this.paper.path( ['M', this.options.gutter.left, ny, 'L', this.options.gutter.left - 5, ny ] ).attr(this.options.lines.grid) ); 
+			var label = this.paper.text( this.options.gutter.left - 5, ny, labelValue  ).attr({'text-anchor': 'end'});
 			this.axis.push( label );
-			this.points.yLabels.push( label );
+			chartAxis.points.yLabels.push( label );
 		}
 	}
 
-	for ( var i = 0 ; i <= (this.y.npoints+1) ; i++ ){
+	for ( var i = 0 ; i <= (y.npoints+1) ; i++ ){
 		/* we are doing the negative axis, so we need to move further away from zero */
 		if ( i != 0 ){
-			var y = this.chart.zero + ( i * this.y.step );
-			this.axis.push( this.paper.path( ['M', this.options.gutter.left, y, 'L', this.options.gutter.left - 5, y ] ).attr(this.options.lines.grid) ); 
-			this.points.y.push( y );
+			var ny = chart.zero + ( i * this.y.step );
+			this.axis.push( this.paper.path( ['M', this.options.gutter.left, ny, 'L', this.options.gutter.left - 5, ny ] ).attr(this.options.lines.grid) ); 
+			chartAxis.points.y.push( ny );
 
-			var value = i * this.y.scale;
+			var value = i * y.scale;
 
 			var labelValue = value;
 			if ( this.yFormat.axis ){
 				labelValue = this.yFormat.value( value, this.yFormat.store );
 			}
 
-			var label = this.paper.text( this.options.gutter.left - 5, y, labelValue ).attr({'text-anchor': 'end'});
-			this.points.yLabels.push( label );
+			var label = this.paper.text( this.options.gutter.left - 5, ny, labelValue ).attr({'text-anchor': 'end'});
+			chartAxis.points.yLabels.push( label );
 			this.axis.push( label );
 		}
 	}
 
 	/* draw a label on the Y Axis */
 	if ( this.options.yaxis ){
-		var x = this.left + 5;
-		var y = this.chart.top + ( this.chart.height / 2 );
-		this.axis.push( this.paper.text( x, y, yAxisLabel ).attr({'fill': this.options.labelcolour }).rotate( -90, x, y ) );
+		var nx = this.left + 5;
+		var ny = chart.top + ( chart.height / 2 );
+		this.axis.push( this.paper.text( nx, ny, yAxisLabel ).attr({'fill': this.options.labelcolour }).rotate( -90, nx, ny ) );
 	}
 
+	return chartAxis;
+
+},
+drawXAxis: function(){
+	/* if we haven't got an xaxis, there's little point trying to draw it */
+	if ( this.options.xaxis && this.options.xaxis.length <= 0 ){
+		return;
+	}
+
+	Array.each( this.options.data, function( valueGroup, position ){
+		//var middle = i + ( this.xStep / 2 );
+		var x = this.points.x[position] + ( this.xStep / 2 );
+		var y = this.chart.bottom;
+
+		if ( this.options.xaxis && this.options.xaxis[position]){
+			var label = this.paper.text( x - 5, y, this.options.xaxis[position] ).attr({'text-anchor': 'end', 'fill': this.options.labelcolour } ).rotate( -90, x, y );	
+		}
+	}, this );
 },
 drawKey: function(){
 	if ( this.stacked ){
@@ -441,7 +484,6 @@ drawGrid: function(){
 	Array.each( this.points.y, function( point ){
 		this.paper.path( ['M',this.chart.left,point, 'L', this.chart.right, point ] ).attr( this.options.lines.grid ).toBack();
 	}, this );
-
 },
 getColour: function( value ){
 

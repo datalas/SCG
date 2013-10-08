@@ -39,17 +39,6 @@ initialize: function( obj, options ){
 	this.drawKey();
 	this.drawBars();
 },
-drawXAxis: function(){
-	Array.each( this.options.data, function( valueGroup, position ){
-		//var middle = i + ( this.xStep / 2 );
-		var x = this.points.x[position] + ( this.xStep / 2 );
-		var y = this.chart.bottom;
-
-		if ( this.options.xaxis && this.options.xaxis[position]){
-			var label = this.paper.text( x - 5, y, this.options.xaxis[position] ).attr({'text-anchor': 'end', 'fill': this.options.labelcolour } ).rotate( -90, x, y );	
-		}
-	}, this );
-},
 drawBar: function( value, x, y, label, colour, alphaColour ){
 	var height = Math.round((value / this.y.scale) * this.y.step );
 

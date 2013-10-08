@@ -74,7 +74,7 @@ initialize: function( obj, options ){
 		}
 	}).periodical( this.options.interval, this );
 
-	if( 1 || this.options.selectable ){
+	if( this.options.selectable ){
 		this.element.addEvent('mousedown', this.startSelect.bind( this ) );
 		this.element.addEvent('mouseleave', this.stopSelect.bind( this ) );
 		this.element.addEvent('mouseup', this.endSelect.bind(this) );
@@ -110,6 +110,7 @@ redrawAxis: function(){
 	/* and redraw the graph */
 	this.drawAxis();
 	this.drawGrid();
+	this.drawXAxis();
 	this.drawPoints();
 
 	if ( this.options.average ){
