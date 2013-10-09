@@ -11,6 +11,8 @@ authors:
  - Darren Taylor
 
 requires:
+ - RaphaelJS v2.1.0+ (www.raphaeljs.com)
+ - MooTools Core / More v1.4.5+
  - SCGFormatValue
  - SCGFormatAxis
 
