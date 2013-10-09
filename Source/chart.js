@@ -95,8 +95,8 @@ options: {
 	max: 1,
 	startAtZero: true,
 	key: true,
-	selectable: false,
-	persistantColour: false,/* Option to enforce persistant colouring for different series */
+	selectable: true,
+	persistentColour: false,/* Option to enforce persistent colouring for different series */
 	format: SCGFormat	/* Used to denote additional formatting functions for the y Axis */
 },
 initialize: function( obj, options ){
@@ -160,7 +160,7 @@ addKey: function( label ){
 		}
 
 		var colour = label;
-		if ( this.options.persistantColour ){
+		if ( this.options.persistentColour ){
 			colour = 0;
 		}
 
