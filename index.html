@@ -25,7 +25,7 @@
 	<div id='test11'></div>
 	<h3>Bar Chart</h3>
 	<div id='test2'></div>
-	<h3>Bar Chart (with negative numbers)</h3>
+	<h3>Bar Chart (with negative numbers and persistent colours)</h3>
 	<div id='test3'></div>
 	<h3>Stacked Bar Chart</h3>
 	<div id='test4'></div>
@@ -47,7 +47,7 @@ window.addEvent( 'domready', function(){
 	new SCGLinechart( 'test', {
 		yaxis: 'thingies',
 		//data: [ 10, 20, 30, 14, 19, 47, 139, 233, 123 ],
-		data: [ 112312312330, -212312310, 12312312330, -1342424344, 13245253329, 432423447, 1123123339, 2123335433, -1213123473 ],
+		data: [ 1123122330, -212312310, 12312312330, -1342424344, 13245253329, 432423447, 1123123339, 2123335433, -1213123473 ],
 		labels: [ 'label1', 'label2', 'label3', 'label4', 'label5', 'label6', 'label7', 'label8', 'label9' ],
 		xaxis: [ 'Axis1', 'Axis2','Axis3','Axis4','Axis5','Axis6','Axis7','Axis8','Axis9' ]
 	}); 
@@ -61,7 +61,8 @@ window.addEvent( 'domready', function(){
 	new SCGBarchart( 'test3', {
 		yaxis: 'thingies',
 		data: [ 10, -20, 30, -14, 19, 47, 139, 233, 123, 55, -2, 73, 18, 45, 22, 100, 28, 156 ],
-		labels: [ 'label1', 'label2', 'label3', 'label4', 'label5', 'label6', 'label7', 'label8', 'label9', 'label10', 'label11', 'label12', 'label13', 'label14', 'label15', 'label16', 'label17', 'label18' ]
+		labels: [ 'label1', 'label2', 'label3', 'label4', 'label5', 'label6', 'label7', 'label8', 'label9', 'label10', 'label11', 'label12', 'label13', 'label14', 'label15', 'label16', 'label17', 'label18' ],
+		persistentColour: true
 	});
 
 	new SCGLinechart( 'test1', {
@@ -77,7 +78,8 @@ window.addEvent( 'domready', function(){
 			[ 233, 0, 14  ],
 			[ 123, 179, 20 ]
 		],
-		labels: [ 'label1', 'label2', 'label3', 'label4', 'label5', 'label6', 'label7', 'label8', 'label9' ]
+		labels: [ 'label1', 'label2', 'label3', 'label4', 'label5', 'label6', 'label7', 'label8', 'label9' ],
+		type: 'line'
 	}); 
 
 	new SCGDestackedchart( 'test11', {
@@ -95,7 +97,8 @@ window.addEvent( 'domready', function(){
 			[ 123, 179, 20 ]
 		],
 		labels: [ 'label1', 'label2', 'label3', 'label4', 'label5', 'label6', 'label7', 'label8', 'label9' ],
-		xaxis: [ 'Axis1', 'Axis2','Axis3','Axis4','Axis5','Axis6','Axis7','Axis8','Axis9' ]
+		xaxis: [ 'Axis1', 'Axis2','Axis3','Axis4','Axis5','Axis6','Axis7','Axis8','Axis9' ],
+		type: 'block'
 	}); 
 
 
