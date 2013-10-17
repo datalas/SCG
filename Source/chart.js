@@ -374,6 +374,9 @@ drawAxis: function(){
 	this.labelX = chartAxis.labelX;
 	this.points = chartAxis.points;
 },
+calculateXStep: function( chart ){
+	return ( chart.width / this.numberOfPoints );
+},
 drawChartAxis: function( chart, y )
 {
 	/* draw both the X and Y axis */
@@ -396,7 +399,7 @@ drawChartAxis: function( chart, y )
 	};
 
 	/* draw the X axis */
-	this.xStep = chart.width / this.numberOfPoints;
+	this.xStep = this.calculateXStep( chart );
 
 	var label = 0;
 	chartAxis.labelY = chart.top;

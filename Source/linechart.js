@@ -327,7 +327,6 @@ resize: function( width, height ){
 	/* set ranges */
 	this.setRange( this.options.x, this.options.y );
 
-	this._step = this.chart.width / (this.numberOfPoints - 1); 
 	this._left = this.chart.left;
 
 	this.redrawAxis();
@@ -383,11 +382,10 @@ tailKeys: function(){
 			x: x
 		});
 	}, this );
+},
+calculateXStep: function( chart ){
+	return ( chart.width / ( this.numberOfPoints - 1 ));
 }
-
-
-
-
 });
 
 
