@@ -250,7 +250,7 @@ moveLine: function( line, lineData, colour ){
 	}
 	return line;
 },
-chartLine: function( data, colour ){
+chartLine: function( data, colour, chart ){
 	var line = {
 		linePath: '',
 		fillPath: '',
@@ -261,16 +261,23 @@ chartLine: function( data, colour ){
 	var x = this._left;
 	var obj = this;
 
+	if ( !chart ){
+		chart = {
+			y: this.y,
+			position: this.chart
+		};
+	}
+
 	Array.each( data, function( value, position ){
-		var height = Math.round((value / this.y.scale) * this.y.step );
+		var height = Math.round((value / chart.y.scale) * chart.y.step );
 
 		var point = {
 			obj: obj,
-			bottom: this.chart.zero - height + 5,
+			bottom: chart.position.zero - height + 5,
 			value: value,
 			middle: x,
 			x: x,
-			y: this.chart.zero - height,
+			y: chart.position.zero - height,
 			label: {
 				label: this.options.labels[ position ]
 			}
@@ -278,7 +285,7 @@ chartLine: function( data, colour ){
 
 		line.points.push( point );
 
-		x += this._step;
+		x += this.xStep;
 	}, this );	
 
 	var path = [];
@@ -301,7 +308,7 @@ chartLine: function( data, colour ){
 
 	/* create a fill path */
 	var fillpath = path.clone();
-	fillpath.push( 'V', this.chart.zero, 'H', x, 'V', line.points[0].y, 'Z' );
+	fillpath.push( 'V', chart.position.zero, 'H', x, 'V', line.points[0].y, 'Z' );
 
 	line.linePath = path.join(',');
 	line.fillPath = fillpath.join(',');

@@ -160,63 +160,7 @@ drawAverage: function()
 	}, this );
 },
 chartLine: function( data, colour ){
-	var line = {
-		linePath: '',
-		fillPath: '',
-		points: [],
-		paper: {}
-	};
-
-	var x = this._left;
-	var obj = this;
-
-	var chart = this._destacked[ colour ];
-
-	Array.each( data, function( value, position ){
-		var height = Math.round((value / chart.y.scale) * chart.y.step );
-
-		var point = {
-			obj: obj,
-			bottom: chart.position.zero - height + 5,
-			value: value,
-			middle: x,
-			x: x,
-			y: chart.position.zero - height,
-			label: {
-				label: this.options.labels[ position ]
-			}
-		};
-
-		line.points.push( point );
-
-		x += this._step;
-	}, this );	
-
-	var path = [];
-
-	line.points.reverse().each( function( point, position ){
-		if ( position == 0 ){
-			/* first point */
-			if ( this.options.smooth ){
-				path.push( 'M', point.x, point.y, 'R' );
-			} else {
-				path.push( 'M', point.x, point.y, 'L' );
-			}
-		} else if ( position == line.points.length ){
-			/* last point */
-		} else {
-			var previous = line.points[ position - 1 ];
-			path.push( point.x, point.y );
-		}
-	}, this );
-
-	/* create a fill path */
-	var fillpath = path.clone();
-	fillpath.push( 'V', chart.position.zero, 'H', x, 'V', line.points[0].y, 'Z' );
-
-	line.linePath = path.join(',');
-	line.fillPath = fillpath.join(',');
-	return line;
+	return this.parent( data, colour, this._destacked[ colour ] );
 },
 drawGrid: function(){
 	this._destacked.each( function( chart ){
