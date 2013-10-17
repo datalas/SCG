@@ -25,7 +25,7 @@ Implements: [ Events, Options ],
 Extends: SCGChart,
 options:{
 	stacked: 0,
-	smooth: true,
+	type: 'smooth',  /* can be 'block', 'line' or 'smooth' */
 	points: true,
 
 	clickable: false,
@@ -290,19 +290,48 @@ chartLine: function( data, colour, chart ){
 
 	var path = [];
 
+	/* create a number of functions to handle the line points */
+	/* these are different depending upon what type of line   */
+	/* drawing mode we are in (options.type) so we can calculate */
+	/* them once and not have to worry about making the code */
+	/* which determines the point type look complicated */
+	var handleFirst;
+	var handleLast = function( point ){};
+	var handleMid = function( point ){
+		path.push( point.x, point.y );
+	};
+	var xStep = this.xStep;
+
+	switch( this.options.type ){
+	case 'smooth':
+		handleFirst = function( point ){
+			path.push( 'M', point.x, point.y, 'R' );
+		};
+		break;
+	case 'block':
+		handleFirst = function( point ){
+			path.push( 'M', point.x, point.y );
+		};
+		handleMid = function( point ){
+			path.push( 'H', point.x, 'V', point.y );
+		};
+		break;
+	default:
+		handleFirst = function( point ){
+			path.push( 'M', point.x, point.y, 'L' );
+		};
+		break;
+	};
+				
 	line.points.reverse().each( function( point, position ){
 		if ( position == 0 ){
 			/* first point */
-			if ( this.options.smooth ){
-				path.push( 'M', point.x, point.y, 'R' );
-			} else {
-				path.push( 'M', point.x, point.y, 'L' );
-			}
+			handleFirst( point );
 		} else if ( position == line.points.length ){
 			/* last point */
+			handleLast( point );
 		} else {
-			var previous = line.points[ position - 1 ];
-			path.push( point.x, point.y );
+			handleMid( point );
 		}
 	}, this );
 
