@@ -198,15 +198,15 @@ addPointToLine: function( line, lineData, colour ){
 
 	delete newLine;
 
-	line.paper.linePath.animate( { transform: [ 'T', -this._step, 0 ] }, this.options.interval, 'linear', this.complete.bind(this) );
-	line.paper.fillPath.animateWith( line.paper.linePath, null, { transform: [ 'T', -this._step, 0 ] }, this.options.interval, 'linear' );
-	line.paper.pointsSet.animateWith( line.paper.linePath, null,   { transform: [ 'T', -this._step, 0 ] }, this.options.interval, 'linear' );
+	line.paper.linePath.animate( { transform: [ 'T', -this.xStep, 0 ] }, this.options.interval, 'linear', this.complete.bind(this) );
+	line.paper.fillPath.animateWith( line.paper.linePath, null, { transform: [ 'T', -this.xStep, 0 ] }, this.options.interval, 'linear' );
+	line.paper.pointsSet.animateWith( line.paper.linePath, null,   { transform: [ 'T', -this.xStep, 0 ] }, this.options.interval, 'linear' );
 
 	line.paper.linePath.toFront();
 },
 drawLine: function( line, colour ){
 	line.paper.linePath = this.paper.path( line.linePath ).attr({'stroke': this.colours[colour], 'stroke-width': 2});;
-	line.paper.fillPath = this.paper.path( line.fillPath ).attr({'stroke-width': 0, 'fill': this.colours[colour], 'fill-opacity': 0.3});;
+	line.paper.fillPath = this.paper.path( line.fillPath ).attr({'stroke-width': 0, 'fill': this.fillColours[colour], 'fill-opacity': this.fillOpacity[ colour ]});;
 	line.paper.points   = [];//this.paper.set();
 	line.paper.pointsSet = this.paper.set();
 	if ( this.options.points ){

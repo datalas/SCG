@@ -126,14 +126,35 @@ initialize: function( obj, options ){
 
 },
 createColours: function(){
-	var a = [];
-	var aa = [];
-	this.options.colours.each( function( colour ){
-		a.push( 'rgb(' + colour + ')' );
-		aa.push( 'rgba(' + colour + ',0.1)' );
+	this.colours = [];
+	this.fillColours = [];
+	this.alphaColours = [];
+	this.fillOpacity = [];
+	this.options.colours.each( function( colourDef ){
+		console.log( colourDef, typeOf( colourDef ) );
+		var colour = colourDef;
+		var opacity = 0.3;
+		switch( typeOf( colourDef ) ){
+		case 'object':
+			colour = colourDef.colour;
+			if ( colourDef.opacity != null ){
+				opacity = colourDef.opacity;	
+			}
+		default:
+			break;
+		};
+
+		if ( typeOf( colour[ 0 ] ) == 'array' ){
+			this.colours.push( 'rgb(' + colour[0] + ')' );
+			this.fillColours.push( '90-rgba(' + colour[0] + ')-rgb(' + colour[1] + '):80' );
+			this.alphaColours.push( 'rgba(' + colour[0] + ',0.1)' );
+		} else {
+			this.colours.push( 'rgb(' + colour + ')' );
+			this.fillColours.push( 'rgb(' + colour + ')' );
+			this.alphaColours.push( 'rgba(' + colour + ',0.1)' );
+		}
+		this.fillOpacity.push( opacity );
 	}, this );
-	this.colours = a;
-	this.alphaColours = aa;
 },
 createPaper: function(){
 	this.paper = new Raphael( this.element, this.options.width, this.options.height );
