@@ -135,7 +135,7 @@ drawAverage: function(){
 	}
 
 	var height = Math.round(( (total/numberOfPoints) / this.y.scale) * this.y.step );
-	this.averageLine = this.paper.path([ 'M', this.chart.left, this.chart.zero - height, 'H', this.chart.right ]).attr({'stroke': '#ff6600'});
+	this.averageLine = this.paper.path([ 'M', this.chart.left, this.chart.zero - height, 'H', this.chart.right ]).attr( this.options.styles.averageLine );
 },
 drawPoints: function(){
 	this._lines = [];

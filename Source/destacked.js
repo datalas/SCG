@@ -142,8 +142,6 @@ drawAxis: function(){
 		offset += this.options.graphHeight + this.options.graphSeperator;
 	}, this );
 },
-drawGrid: function(){
-},
 drawAverage: function()
 {
 	this._destacked.each( function( chart ){
@@ -156,21 +154,23 @@ drawAverage: function()
 		}, this );
 
 		var height = Math.round(( (total/numberOfPoints) / chart.y.scale) * chart.y.step );
-		this.paper.path([ 'M', chart.position.left, chart.position.zero - height, 'H', chart.position.right ]).attr({'stroke': '#ff6600'});
+		this.paper.path([ 'M', chart.position.left, chart.position.zero - height, 'H', chart.position.right ]).attr( this.options.styles.averageLine);
 	}, this );
 },
 chartLine: function( data, colour ){
 	return this.parent( data, colour, this._destacked[ colour ] );
 },
 drawGrid: function(){
-	this._destacked.each( function( chart ){
-		Array.each( chart.axis.points.x, function( point ){
-			this.paper.path( ['M',point,chart.position.bottom, 'L', point, chart.position.top ] ).attr( this.options.lines.grid ).toBack();
+	if ( this.options.grid ){
+		this._destacked.each( function( chart ){
+			Array.each( chart.axis.points.x, function( point ){
+				this.paper.path( ['M',point,chart.position.bottom, 'L', point, chart.position.top ] ).attr( this.options.lines.grid ).toBack();
+			}, this );
+			Array.each( chart.axis.points.y, function( point ){
+				this.paper.path( ['M',chart.position.left,point, 'L', chart.position.right, point ] ).attr( this.options.lines.grid ).toBack();
+			}, this );
 		}, this );
-		Array.each( chart.axis.points.y, function( point ){
-			this.paper.path( ['M',chart.position.left,point, 'L', chart.position.right, point ] ).attr( this.options.lines.grid ).toBack();
-		}, this );
-	}, this );
+	}
 },
 });
 

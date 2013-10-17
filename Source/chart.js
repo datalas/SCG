@@ -91,13 +91,20 @@ options: {
 		selection: {
 			'fill':'#d0d0ff', 
 			'opacity': 0.6
+		},
+		averageLine: {
+			'stroke': '#000000',
+			'opacity': '0.2',
+			'stroke-width': 3
 		}
 	},
+	fillOpacity: 0.3,
 	min: 0,
 	max: 1,
 	startAtZero: true,
 	key: true,
 	selectable: true,
+	grid: true,		/* Whether to display a grid in the background of the chart */
 	persistentColour: false,/* Option to enforce persistent colouring for different series */
 	format: SCGFormat	/* Used to denote additional formatting functions for the y Axis */
 },
@@ -133,7 +140,7 @@ createColours: function(){
 	this.options.colours.each( function( colourDef ){
 		console.log( colourDef, typeOf( colourDef ) );
 		var colour = colourDef;
-		var opacity = 0.3;
+		var opacity = this.options.fillOpacity;
 		switch( typeOf( colourDef ) ){
 		case 'object':
 			colour = colourDef.colour;
@@ -523,12 +530,14 @@ drawKey: function(){
 	}
 },
 drawGrid: function(){
-	Array.each( this.points.x, function( point ){
-		this.paper.path( ['M',point,this.chart.bottom, 'L', point, this.chart.top ] ).attr( this.options.lines.grid ).toBack();
-	}, this );
-	Array.each( this.points.y, function( point ){
-		this.paper.path( ['M',this.chart.left,point, 'L', this.chart.right, point ] ).attr( this.options.lines.grid ).toBack();
-	}, this );
+	if ( this.options.grid ){
+		Array.each( this.points.x, function( point ){
+			this.paper.path( ['M',point,this.chart.bottom, 'L', point, this.chart.top ] ).attr( this.options.lines.grid ).toBack();
+		}, this );
+		Array.each( this.points.y, function( point ){
+			this.paper.path( ['M',this.chart.left,point, 'L', this.chart.right, point ] ).attr( this.options.lines.grid ).toBack();
+		}, this );
+	}
 },
 getColour: function( value ){
 
