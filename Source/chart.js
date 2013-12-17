@@ -37,7 +37,6 @@ options: {
 	labels: [],
 	xaxis: [],
 	yaxis: null,
-	labelcolour: '#505050',
 	invertNegative: 0,
 	lines: {
 		axis: {
@@ -84,6 +83,7 @@ options: {
 		[ 51,203,130], [ 46,134, 34]
 	],
 	styles: {
+		labelcolour: '#505050',
 		markLabel: {
 			'stroke': '#0000ff',
 			'fill': '#0000ff'
@@ -102,8 +102,8 @@ options: {
 	min: 0,
 	max: 1,
 	startAtZero: true,
-	key: true,
-	selectable: true,
+	key: true,		/* Display a key ? */
+	selectable: false,	/* Whether the graph can be selected (or parts of it) */
 	grid: true,		/* Whether to display a grid in the background of the chart */
 	persistentColour: false,/* Option to enforce persistent colouring for different series */
 	format: SCGFormat	/* Used to denote additional formatting functions for the y Axis */
@@ -138,7 +138,6 @@ createColours: function(){
 	this.alphaColours = [];
 	this.fillOpacity = [];
 	this.options.colours.each( function( colourDef ){
-		console.log( colourDef, typeOf( colourDef ) );
 		var colour = colourDef;
 		var opacity = this.options.fillOpacity;
 		switch( typeOf( colourDef ) ){
@@ -496,7 +495,7 @@ drawChartAxis: function( chart, y )
 	if ( this.options.yaxis ){
 		var nx = this.left + 5;
 		var ny = chart.top + ( chart.height / 2 );
-		this.axis.push( this.paper.text( nx, ny, yAxisLabel ).attr({'fill': this.options.labelcolour }).rotate( -90, nx, ny ) );
+		this.axis.push( this.paper.text( nx, ny, yAxisLabel ).attr({'fill': this.options.styles.labelcolour }).rotate( -90, nx, ny ) );
 	}
 
 	return chartAxis;
@@ -514,7 +513,7 @@ drawXAxis: function(){
 		var y = this.chart.bottom;
 
 		if ( this.options.xaxis && this.options.xaxis[position]){
-			var label = this.paper.text( x - 5, y, this.options.xaxis[position] ).attr({'text-anchor': 'end', 'fill': this.options.labelcolour } ).rotate( -90, x, y );	
+			var label = this.paper.text( x - 5, y, this.options.xaxis[position] ).attr({'text-anchor': 'end', 'fill': this.options.styles.labelcolour } ).rotate( -90, x, y );	
 		}
 	}, this );
 },
