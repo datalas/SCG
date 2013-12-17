@@ -108,6 +108,17 @@ drawAxis: function(){
 
 	this.axis = this.paper.set();
 
+	this.points = {
+		x: [],
+		y: [],
+		xLabels: [],
+		yLabels: [],
+	};
+
+	/* Set the labelX and labelY points, these are where the key will appear */
+	this.labelY = this.chart.top;
+	this.labelX = this.width - this.options.gutter.right + 30;
+
 	this._destacked = [];
 
 	/* a destacked graph *has* to be stacked for it to be destacked */
