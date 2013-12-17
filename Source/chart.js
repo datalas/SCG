@@ -499,6 +499,9 @@ drawChartAxis: function( chart, y )
 		}
 	}
 
+	/* and add a final X point to the chart, to cover the right hand axis */
+	chartAxis.points.x.push( chart.right );
+
 	/* draw a label on the Y Axis */
 	if ( this.options.yaxis ){
 		var nx = this.left + 5;
