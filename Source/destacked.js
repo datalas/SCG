@@ -176,13 +176,28 @@ chartLine: function( data, colour ){
 },
 drawGrid: function(){
 	if ( this.options.grid ){
+		if ( this._grid ){
+			this._grid.clear();
+		} else {
+			this._grid = this.paper.set();
+		}
+
 		this._destacked.each( function( chart ){
 			Array.each( chart.axis.points.x, function( point ){
-				this.paper.path( ['M',point,chart.position.bottom, 'L', point, chart.position.top ] ).attr( this.options.lines.grid ).toBack();
+				this._grid.push( this.paper.path( ['M',point,chart.position.bottom, 'L', point, chart.position.top ] ).attr( this.options.lines.grid ).toBack() );
 			}, this );
 			Array.each( chart.axis.points.y, function( point ){
-				this.paper.path( ['M',chart.position.left,point, 'L', chart.position.right, point ] ).attr( this.options.lines.grid ).toBack();
+				this._grid.push( this.paper.path( ['M',chart.position.left,point, 'L', chart.position.right, point ] ).attr( this.options.lines.grid ).toBack() );
 			}, this );
+
+			/* does the grid have a background ? */
+			if ( this.options.styles.grid ){
+				this._grid.push( this.paper.rect( chart.position.left, chart.position.top, chart.position.width, chart.position.height ).attr({
+					'stroke-width': 0,
+					'fill':this.options.styles.grid
+				}).toBack() );
+			}
+
 		}, this );
 	}
 },

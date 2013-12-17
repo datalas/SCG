@@ -97,8 +97,9 @@ options: {
 			'opacity': '0.2',
 			'stroke-width': 3
 		},
-		background: '90-#ffffff-#f0f0ff',
-		border: '#9090ff'
+		background: '90-#ffffff-#f7f7ff',
+		grid: '45-#ffffff-#f0f0ff',
+		border: '#f0f0ff'
 	},
 	fillOpacity: 0.3,
 	min: 0,
@@ -541,12 +542,28 @@ drawKey: function(){
 },
 drawGrid: function(){
 	if ( this.options.grid ){
+		/* create a container for the grid (clearing out any existing ones) */
+		if ( this._grid ){
+			this._grid.clear();
+		} else {
+			this._grid = this.paper.set();
+		}
+
 		Array.each( this.points.x, function( point ){
-			this.paper.path( ['M',point,this.chart.bottom, 'L', point, this.chart.top ] ).attr( this.options.lines.grid ).toBack();
+			this._grid.push( this.paper.path( ['M',point,this.chart.bottom, 'L', point, this.chart.top ] ).attr( this.options.lines.grid ).toBack() );
 		}, this );
 		Array.each( this.points.y, function( point ){
-			this.paper.path( ['M',this.chart.left,point, 'L', this.chart.right, point ] ).attr( this.options.lines.grid ).toBack();
+			this._grid.push( this.paper.path( ['M',this.chart.left,point, 'L', this.chart.right, point ] ).attr( this.options.lines.grid ).toBack() );
 		}, this );
+
+		/* does the grid have a background ? */
+		if ( this.options.styles.grid ){
+			this._grid.push( this.paper.rect( this.chart.left, this.chart.top, this.chart.width, this.chart.height ).attr({
+				'stroke-width': 0,
+				'fill':this.options.styles.grid
+			}).toBack() );
+		}
+
 	}
 },
 getColour: function( value ){
