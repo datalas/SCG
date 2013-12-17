@@ -25,10 +25,6 @@ Implements: [ Events, Options ],
 Extends: SCGPiechart,
 initialize: function( obj, options ){
 	this.parent( obj, options);
-	this.element = $(obj);
-
-	this.createPaper();
-	this.createColours();
 
 	this.points = 5;
 

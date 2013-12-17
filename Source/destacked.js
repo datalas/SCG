@@ -87,6 +87,7 @@ redrawAxis: function(){
 	this.drawAxis();
 	this.drawGrid();
 	this.drawPoints();
+	this.createKey();
 
 	if ( this.options.average ){
 		this.drawAverage();
@@ -101,6 +102,7 @@ redrawAxis: function(){
 	});
 
 	this.drawBackground();
+	this.drawKey();
 },
 drawAxis: function(){
 

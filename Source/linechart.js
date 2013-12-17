@@ -35,24 +35,21 @@ options:{
 
 	periodical: function(){ },
 	complete: function(){ },
-	translateLabels: function( label ){ return label; }
+	translateLabels: function( label ){ return label; },
+
+	key: false
 },
 initialize: function( obj, options ){
 	this.parent( obj, options );
-	this.element = $(obj);
-	this.createPaper();
 	this.clickgrid = this.paper.set();
 
 	this.numberOfPoints = this.options.data.length;
-	this.options.key = false;
 
 	/* line graphs might not be stacked (infact, probably aren't */
 	if ( !this.options.stacked && this.stacked ){
 		this.multi = true;
 		this.stacked = false;
 	}
-
-	this.createColours();
 
 	this.resize( this.options.width, this.options.height );
 
@@ -63,8 +60,6 @@ initialize: function( obj, options ){
 			this.fireEvent('periodical');
 		}
 	}).periodical( this.options.interval, this );
-
-	this.drawKey();
 },
 redraw: function(){
 	/* check whether we need to adjust the scale of our graph */
@@ -89,6 +84,7 @@ redraw: function(){
 	this.drawBackground();
 },
 redrawAxis: function(){
+console.log( this.element, 'redrawing axis' );
 	/* remove all elements from our paper */
 	this.paper.clear();
 	this._labels = null;
@@ -98,6 +94,7 @@ redrawAxis: function(){
 	this.drawGrid();
 	this.drawXAxis();
 	this.drawPoints();
+	this.createKey();
 
 	if ( this.options.average ){
 		this.drawAverage();
@@ -111,7 +108,8 @@ redrawAxis: function(){
 		line.paper.pointsSet.toFront();		
 	});
 
-	this.drawBackground();	
+	this.drawBackground();
+	this.drawKey();
 },
 
 stop: function(){
@@ -150,7 +148,7 @@ drawPoints: function(){
 			var lineData = this.options.data.map( function(c){ return c[column]; } );
 			var line = this.chartLine( lineData, column );
 			this._lines.push( this.drawLine( line, column ) );
-			this.addKey( column );
+//			this.addKey( column );
 		}, this );
 
 	} else {

@@ -25,10 +25,6 @@ Implements: [ Events, Options ],
 Extends: SCGChart,
 initialize: function( obj, options ){
 	this.parent( obj, options);
-	this.element = $(obj);
-
-	this.createPaper();
-	this.createColours();
 
 	this.drawPie();
 	this.drawBackground();

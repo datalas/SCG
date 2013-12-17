@@ -29,7 +29,7 @@ options: {
 	ypoints: 5,
 	gutter: {
 		left: 70,
-		right: 250,
+		right: 20,
 		bottom: 50,
 		top: 20
 	},
@@ -101,11 +101,14 @@ options: {
 		grid: '45-#ffffff-#f0f0ff',
 		border: '#f0f0ff'
 	},
+	/* key options */
+	key: true,		/* Display a key ? */
+	keyHeight: 20,
+
 	fillOpacity: 0.3,
 	min: 0,
 	max: 1,
 	startAtZero: true,
-	key: true,		/* Display a key ? */
 	selectable: false,	/* Whether the graph can be selected (or parts of it) */
 	grid: true,		/* Whether to display a grid in the background of the chart */
 	persistentColour: false,/* Option to enforce persistent colouring for different series */
@@ -113,6 +116,24 @@ options: {
 },
 initialize: function( obj, options ){
 	this.setOptions( options );
+
+	this.element = $(obj);
+	this.createPaper();
+	this.createColours();
+
+	this.getStacked();
+
+	/* depending on the style of key we are using we will need to alter the guttering */
+	/* to correctly incorperate the key */
+	this._keySet = this.paper.set();
+	this._keys = [];
+
+	if ( this.options.key ){
+		this.createKey();
+		var size = this.keySize();
+		this.options.gutter.right += size;
+	}
+
 	this.setDimensions();
 
 	/* are we given any formatting options ? (and were we given enough ?) */
@@ -166,8 +187,46 @@ createColours: function(){
 	}, this );
 },
 createPaper: function(){
-	this.setDimensions();
 	this.paper = new Raphael( this.element, this.options.width, this.options.height );
+},
+createKey: function(){
+	this.labelX = 0;
+	this.labelY = this.options.gutter.top;
+
+	if ( this._keySet ){
+		this._keySet.remove();
+		this._keySet.clear();
+	}
+	this._keys = [];
+
+	if ( this.stacked || this.multi ){
+		this.options.data[0].each( function( data, label ){
+			var key = this.addKey( label );
+			if ( key ){
+				this._keySet.push( key.blob, key.text );
+				this._keys.push( key );
+			}
+		}, this );
+	} else {
+		this.options.data.each( function( data, label ){
+			var key = this.addKey( label );
+
+			if ( key ){
+				this._keySet.push( key.blob, key.text );
+				this._keys.push( key );
+			}
+		}, this );
+	}
+
+	this._keySet.hide();
+	return;
+},
+keySize: function(){
+	var width = 0;
+	if ( this._keySet.getBBox().width != Infinity && this._keySet.getBBox().width != -Infinity ){
+		width = this._keySet.getBBox().width + 30;
+	}
+	return width;
 },
 /* Add an item to the keys */
 addKey: function( label ){
@@ -182,12 +241,15 @@ addKey: function( label ){
 		}
 	}
 
+	var bottom = this.options.height - this.options.gutter.bottom;
+
 	if ( this.options.key && this.options.labels[ label ] ){
-		if ( this.labelY > this.chart.bottom ){
+		if ( this.labelY > bottom ){
 			/* this label is not going to fit on the screen, not at the bottom anyhow */
 			/* so we need to move it */
 			this.labelY = this.keys.y;
-			this.labelX = this.keys.x + Math.max( this.keys.columns[ this.keys.column ].map( function(i){ return i.width; } ).max() );
+			this.labelX = Math.max( this.keys.columns[ this.keys.column ].map( function(i){ return i.width; } ).max() );
+
 			this.keys.column ++;
 			this.keys.columns[ this.keys.column ] = [];
 		}
@@ -196,7 +258,6 @@ addKey: function( label ){
 		if ( this.options.persistentColour ){
 			colour = 0;
 		}
-
 		var key = {
 			label: this.options.labels[label],
 			text: this.paper.text( this.labelX + 15, this.labelY, this.options.labels[label] ).attr({'text-anchor': 'start', 'font-size': 12}),
@@ -205,11 +266,19 @@ addKey: function( label ){
 
 		key.width = 30 + key.text.getBBox().width;
 
-		this.labelY += 20;
+		this.labelY += this.options.keyHeight;
 		this.keys.columns[ this.keys.column ].push( key );
 		return key;
 	}
 },
+drawKey: function(){
+	if ( this._keySet ){
+		this._keySet.show();
+		this._keySet.transform( "" ); /* reset any current transformations */
+		this._keySet.transform( "t" + (this.options.width - this.options.gutter.right + 30) + ',' + 0 );
+	}
+},
+
 createToolTip: function( where ){
 	var tt = where.obj.paper.set();
 
@@ -263,7 +332,6 @@ setDimensions: function(){
 setRange: function()
 {
 	var range = this.getRange( this.options.data, this.chart );
-	this.stacked = range.stacked;	
 	this.chart.zero = y.zero;
 
 	var dirty = false;
@@ -294,24 +362,27 @@ setRange: function()
 getRange: function( data, chart )
 {
 	y = {};
-	var stacked = false;
 
-	/* determine whether this is a stacked graph or otherwise */
 	switch( typeOf( data[0] ) ){
 	case 'array':
-		stacked = true;
 		var highest = [];
 		var lowest = [];
 		data.each( function( point ){
 			var h = 0;
 			var l = 0;
-			Array.each( point, function( p ){
-				if ( p > 0 ){
-					h += p;
-				} else {
-					l += p;
-				}
-			}, this );
+                        if ( !this.multi ){
+                                /* this is a stacked graph, add them together */
+                                Array.each( point, function( p ){
+                                        if ( p > 0 ){
+                                                h += p;
+                                        } else {
+                                                l += p;
+                                        }
+                                }, this );
+                        } else {
+                                l = Math.floor( point.min() );
+                                h = Math.ceil( point.max() );
+                        }
 			highest.push( h );
 			lowest.push( l );
 		}, this );
@@ -322,7 +393,6 @@ getRange: function( data, chart )
 		break
 	case 'number':
 	case 'string':
-		stacked = false;
 
 		y.min = Math.floor( data.map( function(point){ return Math.floor( point ) } ).min() );
 		y.max = Math.ceil( data.map( function(point){ return Math.ceil( point ) } ).max() );
@@ -379,8 +449,7 @@ getRange: function( data, chart )
 		npoints: npoints,
 		scale: scale,
 		step: step,
-		zero: zero,
-		stacked: stacked
+		zero: zero
 	};
 
 	return y;
@@ -453,10 +522,37 @@ drawChartAxis: function( chart, y )
 	/* this may alter the means by which the label is displayed, it might also alter */ 
 	/* the label itself */
 
+	/* work out if our lines are in different places etc */
+
+	var labelColour = this.options.lines.grid;
+	if ( chart.labelColour ){
+		labelColour = chart.labelColour;
+	}
+
+	var linePosition = 'right';
+	if ( chart.linePosition ){
+		linePosition = chart.linePosition;
+	}
+
+	var labelPosition = this.options.gutter.left;
+	if ( chart.labelPosition ){
+		labelPosition = chart.labelPosition;
+		this.axis.push( this.paper.path( 'M' + labelPosition + ',' + chart.bottom + 'V' + chart.top ).attr(labelColour) );
+	}
+
+
 	yAxisLabel = this.options.yaxis;
 
 	if ( this.yFormat.axis ){
 		yAxisLabel = this.yFormat.axis( y.min, y.max, yAxisLabel, this.yFormat.store );
+	}
+
+	var markerDirection = -1;
+	var markerOrientation = 'end';
+
+	if ( linePosition == 'left' ){
+		markerDirection = 1;
+		markerOrientation = 'start';
 	}
 
 	for ( var i = 0 ; i <= (y.points+1) ; i++ ){
@@ -469,12 +565,12 @@ drawChartAxis: function( chart, y )
 		}
 
 		if ( i == 0 ){
-			var zeroLabel = this.paper.text( this.options.gutter.left - 5, ny, 0  ).attr({'text-anchor': 'end', 'font-weight': 'bold', 'font-size': 13 });
+			var zeroLabel = this.paper.text( labelPosition + (5*markerDirection), ny, 0  ).attr({'text-anchor': markerOrientation, 'font-weight': 'bold', 'font-size': 13 });
 			this.axis.push( zeroLabel );
 			chartAxis.points.yLabels.push( zeroLabel );
 		} else {
-			this.axis.push( this.paper.path( ['M', this.options.gutter.left, ny, 'L', this.options.gutter.left - 5, ny ] ).attr(this.options.lines.grid) ); 
-			var label = this.paper.text( this.options.gutter.left - 5, ny, labelValue  ).attr({'text-anchor': 'end'});
+			this.axis.push( this.paper.path( ['M', labelPosition, ny, 'L', labelPosition + (5*markerDirection), ny ] ).attr(labelColour) ); 
+			var label = this.paper.text( labelPosition + (5*markerDirection), ny, labelValue  ).attr({'text-anchor': markerOrientation });
 			this.axis.push( label );
 			chartAxis.points.yLabels.push( label );
 		}
@@ -484,7 +580,7 @@ drawChartAxis: function( chart, y )
 		/* we are doing the negative axis, so we need to move further away from zero */
 		if ( i != 0 ){
 			var ny = chart.zero + ( i * this.y.step );
-			this.axis.push( this.paper.path( ['M', this.options.gutter.left, ny, 'L', this.options.gutter.left - 5, ny ] ).attr(this.options.lines.grid) ); 
+			this.axis.push( this.paper.path( ['M', labelPosition, ny, 'L', labelPosition + (5*markerDirection), ny ] ).attr(labelColour) ); 
 			chartAxis.points.y.push( ny );
 
 			var value = i * y.scale;
@@ -494,7 +590,7 @@ drawChartAxis: function( chart, y )
 				labelValue = this.yFormat.value( value, this.yFormat.store );
 			}
 
-			var label = this.paper.text( this.options.gutter.left - 5, ny, labelValue ).attr({'text-anchor': 'end'});
+			var label = this.paper.text( chart.left + (5*markerDirection), ny, labelValue ).attr({'text-anchor': markerOrientation});
 			chartAxis.points.yLabels.push( label );
 			this.axis.push( label );
 		}
@@ -526,19 +622,9 @@ drawXAxis: function(){
 
 		if ( this.options.xaxis && this.options.xaxis[position]){
 			var label = this.paper.text( x - 5, y, this.options.xaxis[position] ).attr({'text-anchor': 'end', 'fill': this.options.styles.labelcolour } ).rotate( -90, x, y );	
+			this.axis.push( label );
 		}
 	}, this );
-},
-drawKey: function(){
-	if ( this.stacked ){
-		this.options.data[0].each( function( data, label ){
-			this.points.xLabels.push( this.addKey( label ) );
-		}, this );
-	} else {
-		this.options.data.each( function( data, label ){
-			this.points.xLabels.push( this.addKey( label ) );
-		}, this );
-	}
 },
 drawGrid: function(){
 	if ( this.options.grid ){
@@ -602,6 +688,17 @@ getColour: function( value ){
 
 	return 'rgb(' + r + ',' + g + ',' + b + ')';
 
+},
+getStacked: function(){
+	this.stacked = false;
+	switch( typeOf( this.options.data[0] ) ){
+	case 'array':
+		this.stacked = true;
+		break
+	case 'number':
+	case 'string':
+		this.stacked = false;
+	}
 },
 data: function( newData ){
 	this.options.data = newData;

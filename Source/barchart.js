@@ -26,13 +26,10 @@ Implements: [ Events, Options ],
 Extends: SCGChart,
 initialize: function( obj, options ){
 	this.parent( obj, options );
-	this.element = $(obj);
-	this.createPaper();
 
 	this.numberOfPoints = this.options.data.length;
 
 	this.setRange( this.options.x, this.options.y );
-	this.createColours();
 	this.drawAxis();
 	this.drawXAxis();
 	this.drawGrid();
@@ -108,10 +105,10 @@ drawBars: function(){
 			Array.each( valueGroup, function( value, set ){
 				var bar;
 				if ( value >= 0 ){
-					bar = this.drawBar( value, this.points.x[position], positiveOffset, this.points.xLabels[ set ], this.colours[ set ], this.alphaColours[ set ] );
+					bar = this.drawBar( value, this.points.x[position], positiveOffset, this._keys[ set ], this.colours[ set ], this.alphaColours[ set ] );
 					positiveOffset -= bar.height;
 				} else {
-					bar = this.drawBar( value, this.points.x[position], negativeOffset, this.points.xLabels[ set ], this.colours[ set ], this.alphaColours[ set ] );
+					bar = this.drawBar( value, this.points.x[position], negativeOffset, this._keys[ set ], this.colours[ set ], this.alphaColours[ set ] );
 					negativeOffset += bar.height;
 				}
 
@@ -130,7 +127,7 @@ drawBars: function(){
 			if ( this.options.persistentColour ){
 				colour = 0;
 			}
-			var bar = this.drawBar( value, this.points.x[position], this.chart.bottom, this.points.xLabels[ position ], this.colours[ colour ], this.alphaColours[ colour ] );
+			var bar = this.drawBar( value, this.points.x[position], this.chart.bottom, this._keys[ position ], this.colours[ colour ], this.alphaColours[ colour ] );
 			this.bars.push( bar );	
 		}, this );
 	}
