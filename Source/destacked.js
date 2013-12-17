@@ -76,6 +76,7 @@ redraw: function(){
 	}
 
 	this.tailKeys();
+	this.drawBackground();
 },
 redrawAxis: function(){
 	/* remove all elements from our paper */
@@ -98,6 +99,8 @@ redrawAxis: function(){
 	this._lines.each( function( line ){
 		line.paper.pointsSet.toFront();		
 	});
+
+	this.drawBackground();
 },
 drawAxis: function(){
 

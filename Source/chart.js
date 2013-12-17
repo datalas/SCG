@@ -96,7 +96,9 @@ options: {
 			'stroke': '#000000',
 			'opacity': '0.2',
 			'stroke-width': 3
-		}
+		},
+		background: '90-#ffffff-#f0f0ff',
+		border: '#9090ff'
 	},
 	fillOpacity: 0.3,
 	min: 0,
@@ -163,6 +165,7 @@ createColours: function(){
 	}, this );
 },
 createPaper: function(){
+	this.setDimensions();
 	this.paper = new Raphael( this.element, this.options.width, this.options.height );
 },
 /* Add an item to the keys */
@@ -381,6 +384,12 @@ getRange: function( data, chart )
 
 	return y;
 },
+drawBackground: function(){
+	this.paperBackground = {
+		border: this.paper.rect( 0, 0, this.options.width, this.options.height ).attr( { 'stroke': this.options.styles.border, 'stroke-width': 1 } ).toFront(),
+		background: this.paper.rect( 0, 0, this.options.width, this.options.height ).attr( { 'fill': this.options.styles.background, 'stroke-width': 0 } ).toBack(),
+	};
+},
 drawAxis: function(){
 	/* it is possible that we will want to move the bottom of our graph */
 	/* this would be because of negative numbers */
@@ -396,7 +405,6 @@ drawAxis: function(){
 
 	/* preserve some of the bits from the axis we just created */
 	this.grid   = chartAxis.grid;
-	this.points = chartAxis.points;
 	this.labelY = chartAxis.labelY;
 	this.labelX = chartAxis.labelX;
 	this.points = chartAxis.points;

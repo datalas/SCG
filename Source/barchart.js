@@ -38,6 +38,7 @@ initialize: function( obj, options ){
 	this.drawGrid();
 	this.drawKey();
 	this.drawBars();
+	this.drawBackground();
 },
 drawBar: function( value, x, y, label, colour, alphaColour ){
 	var height = Math.round((value / this.y.scale) * this.y.step );

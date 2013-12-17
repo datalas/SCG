@@ -32,6 +32,7 @@ initialize: function( obj, options ){
 
 	this.setRange();
 	this.drawHeatGrid();
+	this.drawBackground();
 },
 drawHeatGrid: function(){
 	/* The heat grid is simple, it's a line consisting of rectangles of the size of data points */

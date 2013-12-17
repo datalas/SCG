@@ -31,6 +31,7 @@ initialize: function( obj, options ){
 	this.createColours();
 
 	this.drawPie();
+	this.drawBackground();
 },
 drawPie: function(){
 	var total = 0;

@@ -86,12 +86,13 @@ redraw: function(){
 	}
 
 	this.tailKeys();
+	this.drawBackground();
 },
 redrawAxis: function(){
 	/* remove all elements from our paper */
 	this.paper.clear();
 	this._labels = null;
-	
+
 	/* and redraw the graph */
 	this.drawAxis();
 	this.drawGrid();
@@ -109,6 +110,8 @@ redrawAxis: function(){
 	this._lines.each( function( line ){
 		line.paper.pointsSet.toFront();		
 	});
+
+	this.drawBackground();	
 },
 
 stop: function(){
@@ -155,12 +158,14 @@ drawPoints: function(){
 		this._lines.push( this.drawLine( line, 0 ) );
 	}
 
-	/* we want to add some buffers to our borders */
-	this.axis.splice( 0,0, this.paper.rect( 0, 0, this.chart.left, this.height ).attr({'stroke-width': 0,'fill':'#ffffff'}).toBack() );
-	this.axis.splice( 0,0, this.paper.rect( this.chart.right, 0, this.width, this.height ).attr({'stroke-width': 0, 'fill':'#ffffff'}).toBack() );
-
+	/* we want to add some buffers to our borders, this white outs the overflow for the animated graphs */
+	this.axis.splice( 0,0, this.paper.rect( 1, 1, this.chart.left, this.height-2 ).attr({'stroke-width': 0,'fill': this.options.styles.background} ).toBack() );
+	this.axis.splice( 0,0, this.paper.rect( this.chart.right, 1, this.width-2, this.height-2 ).attr({'stroke-width': 0, 'fill': this.options.styles.background }).toBack() );
 
 	this.axis.toFront();
+	if ( this.paperBackground ){
+		this.paperBackground.border.toFront();
+	}
 },
 addPoint: function( point, label ){
 	/* add the point to our data */

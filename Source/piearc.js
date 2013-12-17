@@ -33,6 +33,7 @@ initialize: function( obj, options ){
 	this.points = 5;
 
 	this.draw();
+	this.drawBackground();
 },
 drawPie: function(){},
 draw: function(){

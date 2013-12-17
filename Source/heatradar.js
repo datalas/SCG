@@ -33,6 +33,7 @@ initialize: function( obj, options ){
 	this.points = 5;
 
 	this.drawRadar();
+	this.drawBackground();
 },
 drawRadar: function(){
 	var dataPoints = this.options.data[0].length;
