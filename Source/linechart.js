@@ -64,6 +64,7 @@ initialize: function( obj, options ){
 		}
 	}).periodical( this.options.interval, this );
 
+	this.drawKey();
 },
 redraw: function(){
 	/* check whether we need to adjust the scale of our graph */
