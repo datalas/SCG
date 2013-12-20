@@ -620,7 +620,7 @@ drawXAxis: function(){
 		var x = this.points.x[position] + ( this.xStep / 2 );
 		var y = this.chart.bottom;
 
-		if ( this.options.xaxis && this.options.xaxis[position]){
+		if ( this.options.xaxis && this.options.xaxis[position] && x - 5 < this.chart.right ){
 			var label = this.paper.text( x - 5, y, this.options.xaxis[position] ).attr({'text-anchor': 'end', 'fill': this.options.styles.labelcolour } ).rotate( -90, x, y );	
 			this.axis.push( label );
 		}
