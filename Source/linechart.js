@@ -84,7 +84,6 @@ redraw: function(){
 	this.drawBackground();
 },
 redrawAxis: function(){
-console.log( this.element, 'redrawing axis' );
 	/* remove all elements from our paper */
 	this.paper.clear();
 	this._labels = null;
