@@ -110,6 +110,7 @@ options: {
 	max: 1,
 
 	axisLabelStyle: 'full',
+	xGridSpacing: 1,	/* The number of entries between grid lines */
 
 	startAtZero: true,
 	selectable: false,	/* Whether the graph can be selected (or parts of it) */
@@ -654,8 +655,10 @@ drawGrid: function(){
 			this._grid = this.paper.set();
 		}
 
-		Array.each( this.points.x, function( point ){
-			this._grid.push( this.paper.path( ['M',point,this.chart.bottom, 'L', point, this.chart.top ] ).attr( this.options.lines.grid ).toBack() );
+		Array.each( this.points.x, function( point, index ){
+			if ( (index % this.options.xGridSpacing ) == 0 ){
+				this._grid.push( this.paper.path( ['M',point,this.chart.bottom, 'L', point, this.chart.top ] ).attr( this.options.lines.grid ).toBack() );
+			}
 		}, this );
 		Array.each( this.points.y, function( point ){
 			this._grid.push( this.paper.path( ['M',this.chart.left,point, 'L', this.chart.right, point ] ).attr( this.options.lines.grid ).toBack() );

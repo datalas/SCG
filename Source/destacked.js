@@ -207,8 +207,10 @@ drawGrid: function(){
 		}
 
 		this._destacked.each( function( chart ){
-			Array.each( chart.axis.points.x, function( point ){
-				this._grid.push( this.paper.path( ['M',point,chart.position.bottom, 'L', point, chart.position.top ] ).attr( this.options.lines.grid ).toBack() );
+			Array.each( chart.axis.points.x, function( point, index ){
+				if ( ( index % this.options.xGridSpacing ) == 0 ){
+					this._grid.push( this.paper.path( ['M',point,chart.position.bottom, 'L', point, chart.position.top ] ).attr( this.options.lines.grid ).toBack() );
+				}
 			}, this );
 			Array.each( chart.axis.points.y, function( point ){
 				this._grid.push( this.paper.path( ['M',chart.position.left,point, 'L', chart.position.right, point ] ).attr( this.options.lines.grid ).toBack() );
