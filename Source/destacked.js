@@ -1,7 +1,7 @@
 /* 
 ---
 
-name: SCGDestackedhart
+name: SCGDestackedchart
 
 description: SCGDestackedchart Class.  Defines a child class for Destacked Line charts
 
@@ -16,7 +16,7 @@ requires:
  - SCGFormatAxis
  - SCGLinechart
 
-provides: [SCGLinechart]
+provides: [SCGDestackedchart]
 
 events:
 	click( gridLabel, seriesLabel, index, seriesIndex )
