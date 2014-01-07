@@ -48,9 +48,10 @@ options:{
 		}
 	},
 	graphHeight: 80,
-	graphSeperator: 30,
+	graphSeperator: 40,
 	commonScale: false,
 	average: false,
+	key:true
 },
 initialize: function( obj, options ){
 	this.parent( obj, options );
@@ -127,7 +128,7 @@ drawAxis: function(){
 	this._destacked = [];
 
 	/* a destacked graph *has* to be stacked for it to be destacked */
-	var offset = 0;
+	var offset = 5;
 
 	this.options.data[0].each( function( first, seriesindex ){
 		/* flatten the array down so we have a number of different data series */
@@ -155,8 +156,23 @@ drawAxis: function(){
 		destackedGraph.axis = this.drawChartAxis( destackedGraph.position, destackedGraph.y );
 		this._destacked.push( destackedGraph );
 
+		/* add the key */
+		if ( this.options.key ){
+			if ( this.options.labels[ seriesindex ] ){
+				this.axis.push(
+					this.paper.text(
+						0,
+						this.options.gutter.top + offset - 15,
+						this.options.labels[ seriesindex ]
+					).attr({'text-anchor': 'start', 'font-size': 12, 'font-weight': 'bold'})
+				);
+			}
+		}
+
 		offset += this.options.graphHeight + this.options.graphSeperator;
 	}, this );
+},
+addKey: function(){
 },
 drawAverage: function()
 {
