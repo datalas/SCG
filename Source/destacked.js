@@ -18,6 +18,9 @@ requires:
 
 provides: [SCGLinechart]
 
+events:
+	click( gridLabel, seriesLabel, index, seriesIndex )
+
 ...
 */
 
@@ -29,7 +32,7 @@ options:{
 	smooth: true,
 	points: false,
 
-	clickable: false,
+	clickable: true,
 	tailkeys: false,
 
 	interval: 500,
@@ -218,6 +221,21 @@ drawGrid: function(){
 
 		}, this );
 	}
+},
+
+clickableGrid: function(){
+	this.clickgrid.clear();
+	this._destacked.each( function( chart, chartIndex ){
+		Array.each( chart.axis.points.x, function( point, index ){
+			var segment = this.paper.rect( point, chart.position.top, this.xStep, chart.position.height ).attr({'fill':'#ff00ff', 'opacity': 0}).toFront();
+			segment.click( (function(){
+				this.fireEvent('click', [ this.options.xaxis[ index ], this.options.labels[ chartIndex ], index, chartIndex ] );
+			}).bind(this));
+
+			segment.hover( (function(){
+			}).bind(this));
+		}, this );
+	}, this);
 },
 });
 
