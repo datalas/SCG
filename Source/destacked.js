@@ -52,9 +52,7 @@ options:{
 	},
 	graphHeight: 80,
 	graphSeperator: 40,
-	commonScale: false,
-	average: false,
-	key:true
+	commonScale: false
 },
 initialize: function( obj, options ){
 	this.parent( obj, options );
@@ -190,6 +188,11 @@ drawAverage: function()
 
 		var height = Math.round(( (total/numberOfPoints) / chart.y.scale) * chart.y.step );
 		this.paper.path([ 'M', chart.position.left, chart.position.zero - height, 'H', chart.position.right ]).attr( this.options.styles.averageLine);
+		switch( this.options.axisLabelStyle ){
+		case 'extreme':
+			this.paper.text( chart.position.left - 5, chart.position.zero - height, 'Av' ).attr({'text-anchor': 'end' });
+			break;
+		};
 	}, this );
 },
 chartLine: function( data, colour ){

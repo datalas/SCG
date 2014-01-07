@@ -36,7 +36,6 @@ options:{
 	periodical: function(){ },
 	complete: function(){ },
 	translateLabels: function( label ){ return label; },
-
 	key: false
 },
 initialize: function( obj, options ){
@@ -137,6 +136,11 @@ drawAverage: function(){
 
 	var height = Math.round(( (total/numberOfPoints) / this.y.scale) * this.y.step );
 	this.averageLine = this.paper.path([ 'M', this.chart.left, this.chart.zero - height, 'H', this.chart.right ]).attr( this.options.styles.averageLine );
+	switch( this.options.axisLabelStyle ){
+	case 'extreme':
+		this.paper.text( this.chart.left - 5, this.chart.zero - height, 'Av' ).attr({'text-anchor': 'end' });
+		break;
+	};
 },
 drawPoints: function(){
 	this._lines = [];

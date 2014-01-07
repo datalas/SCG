@@ -108,6 +108,9 @@ options: {
 	fillOpacity: 0.3,
 	min: 0,
 	max: 1,
+
+	axisLabelStyle: 'full',
+
 	startAtZero: true,
 	selectable: false,	/* Whether the graph can be selected (or parts of it) */
 	grid: true,		/* Whether to display a grid in the background of the chart */
@@ -565,14 +568,30 @@ drawChartAxis: function( chart, y )
 		}
 
 		if ( i == 0 ){
-			var zeroLabel = this.paper.text( labelPosition + (5*markerDirection), ny, 0  ).attr({'text-anchor': markerOrientation, 'font-weight': 'bold', 'font-size': 13 });
-			this.axis.push( zeroLabel );
-			chartAxis.points.yLabels.push( zeroLabel );
+			switch( this.options.axisLabelStyle ){
+			case 'full':
+				var zeroLabel = this.paper.text( labelPosition + (5*markerDirection), ny, 0  ).attr({'text-anchor': markerOrientation, 'font-weight': 'bold', 'font-size': 13 });
+				this.axis.push( zeroLabel );
+				chartAxis.points.yLabels.push( zeroLabel );
+				break;
+			};
 		} else {
-			this.axis.push( this.paper.path( ['M', labelPosition, ny, 'L', labelPosition + (5*markerDirection), ny ] ).attr(labelColour) ); 
-			var label = this.paper.text( labelPosition + (5*markerDirection), ny, labelValue  ).attr({'text-anchor': markerOrientation });
-			this.axis.push( label );
-			chartAxis.points.yLabels.push( label );
+			switch( this.options.axisLabelStyle ){
+			case 'extreme':
+				if( i == y.points+1 ){
+					this.axis.push( this.paper.path( ['M', labelPosition, ny, 'L', labelPosition + (5*markerDirection), ny ] ).attr(labelColour) ); 
+					var label = this.paper.text( labelPosition + (5*markerDirection), ny, 'Max'  ).attr({'text-anchor': markerOrientation });
+					this.axis.push( label );
+					chartAxis.points.yLabels.push( label );
+				}
+				break;
+			case 'full':
+				this.axis.push( this.paper.path( ['M', labelPosition, ny, 'L', labelPosition + (5*markerDirection), ny ] ).attr(labelColour) ); 
+				var label = this.paper.text( labelPosition + (5*markerDirection), ny, labelValue  ).attr({'text-anchor': markerOrientation });
+				this.axis.push( label );
+				chartAxis.points.yLabels.push( label );
+				break;
+			};
 		}
 	}
 
