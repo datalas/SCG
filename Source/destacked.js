@@ -3,7 +3,7 @@
 
 name: SCGDestackedchart
 
-description: SCGDestackedchart Class.  Defines a child class for Destacked Line charts
+description: SCGDestackedchart Class.  Defines a child class for LineChart charts
 
 licence: See licence.txt
 
@@ -14,7 +14,6 @@ requires:
  - SCGChart
  - SCGFormatValue
  - SCGFormatAxis
- - SCGLinechart
 
 provides: [SCGDestackedchart]
 
