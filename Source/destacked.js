@@ -18,9 +18,6 @@ requires:
 
 provides: [SCGDestackedchart]
 
-events:
-	click( gridLabel, seriesLabel, index, seriesIndex )
-
 ...
 */
 
