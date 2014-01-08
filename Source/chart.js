@@ -504,7 +504,7 @@ drawChartAxis: function( chart, y )
 			x: [],
 			y: [],
 			xLabels: [],
-			yLabels: []
+			yLabels: this.paper.set()
 	};
 
 	/* draw the X axis */
@@ -621,7 +621,7 @@ drawChartAxis: function( chart, y )
 
 	/* draw a label on the Y Axis */
 	if ( this.options.yaxis ){
-		var nx = this.left + 5;
+		var nx = chartAxis.points.yLabels.getBBox().x + ( 25 * markerDirection );
 		var ny = chart.top + ( chart.height / 2 );
 		this.axis.push( this.paper.text( nx, ny, yAxisLabel ).attr({'fill': this.options.styles.labelcolour }).rotate( -90, nx, ny ) );
 	}

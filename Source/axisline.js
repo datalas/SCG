@@ -190,7 +190,7 @@ drawAxis: function(){
 				labelColour: { 'stroke' : this.colours[ seriesindex ] },
 				top:    this.options.gutter.top,
 				width:  ( this.options.width - ( this.options.gutter.left + this.options.gutter.right )),
-				height: this.options.height
+				height: this.options.height - this.options.gutter.top - this.options.gutter.bottom,
 			},
 			series: series
 		};
