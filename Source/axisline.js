@@ -93,7 +93,7 @@ addKey: function( label ){
 
 
 	/* Now a nice shiny label */
-	key.sample.push( this.paper.text( sampleWidth + 20, parseInt( sampleHeight / 2 ), this.options.labels[ label ] ) );
+	key.sample.push( this.paper.text( sampleWidth + 20, parseInt( sampleHeight / 2 ), this.options.labels[ label ] ).attr({'text-anchor': 'start'}) );
 
 	/* if we have a previous sample, move to the left of it */
 	var position = this.options.width - this.options.gutter.right;
