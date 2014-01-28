@@ -85,6 +85,7 @@ redraw: function(){
 redrawAxis: function(){
 	/* remove all elements from our paper */
 	this.paper.clear();
+	this.paperBackground = null;
 	this._labels = null;
 
 	/* and redraw the graph */
