@@ -85,7 +85,6 @@ redraw: function(){
 redrawAxis: function(){
 	/* remove all elements from our paper */
 	this.paper.clear();
-	this.paperBackground = null;
 	this._labels = null;
 
 	/* and redraw the graph */
@@ -304,7 +303,9 @@ chartLine: function( data, colour, chart ){
 	/* them once and not have to worry about making the code */
 	/* which determines the point type look complicated */
 	var handleFirst;
-	var handleLast = function( point ){};
+	var handleLast = function( point ){
+		path.push( point.x, point.y );
+	};
 	var handleMid = function( point ){
 		path.push( point.x, point.y );
 	};
@@ -318,10 +319,16 @@ chartLine: function( data, colour, chart ){
 		break;
 	case 'block':
 		handleFirst = function( point ){
-			path.push( 'M', point.x, point.y );
+			path.push( 'M', point.x + xStep, point.y );
+			path.push( 'H', point.x );
 		};
 		handleMid = function( point ){
-			path.push( 'H', point.x, 'V', point.y );
+			path.push( 'V', point.y );
+			path.push( 'H', point.x );
+		};
+		handleLast = function( point ){
+			path.push( 'V', point.y );
+			path.push( 'H', point.x );
 		};
 		break;
 	default:
@@ -330,18 +337,19 @@ chartLine: function( data, colour, chart ){
 		};
 		break;
 	};
-				
-	line.points.reverse().each( function( point, position ){
+	
+	line.points.reverse().each( function( lpoint, position ){
 		if ( position == 0 ){
 			/* first point */
-			handleFirst( point );
-		} else if ( position == line.points.length ){
+			handleFirst( lpoint );
+		} else if ( position == ( line.points.length - 1 ) ){
 			/* last point */
-			handleLast( point );
+			handleLast( lpoint );
 		} else {
-			handleMid( point );
+			handleMid( lpoint );
 		}
 	}, this );
+
 
 	/* create a fill path */
 	var fillpath = path.clone();
@@ -428,7 +436,17 @@ tailKeys: function(){
 	}, this );
 },
 calculateXStep: function( chart ){
-	return ( chart.width / ( this.numberOfPoints - 1 ));
+	var xStep = ( chart.width / ( this.numberOfPoints - 1) );
+
+	switch( this.options.type ){
+	case 'block':
+		xStep = ( chart.width / ( this.numberOfPoints ) );
+		break;
+	default:
+		break;
+	};
+
+	return xStep;
 }
 });
 
