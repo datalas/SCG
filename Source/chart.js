@@ -138,6 +138,11 @@ initialize: function( obj, options ){
 		this.options.gutter.right += size;
 	}
 
+	if ( this.options.yaxis ){
+		/* we are going to need a minimum width of guttering to show labels */
+		this.options.gutter.left = Math.max( 70, this.options.gutter.left );
+	}
+
 	this.setDimensions();
 
 	/* are we given any formatting options ? (and were we given enough ?) */
