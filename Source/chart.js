@@ -558,8 +558,12 @@ drawChartAxis: function( chart, y )
 		this.axis.push( this.paper.path( 'M' + labelPosition + ',' + chart.bottom + 'V' + chart.top ).attr(labelColour) );
 	}
 
+	/* do we have a custom yLabel ? */
+	var yAxisLabel = this.options.yaxis;
 
-	yAxisLabel = this.options.yaxis;
+	if ( chart.yAxisLabel ){
+		yAxisLabel  = chart.yAxisLabel;
+	}
 
 	if ( this.yFormat.axis ){
 		yAxisLabel = this.yFormat.axis( y.min, y.max, yAxisLabel, this.yFormat.store );

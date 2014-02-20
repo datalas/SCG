@@ -217,6 +217,7 @@ drawAxis: function(){
 				top:    this.options.gutter.top,
 				width:  ( this.options.width - ( this.options.gutter.left + this.options.gutter.right )),
 				height: this.options.height - this.options.gutter.top - this.options.gutter.bottom,
+				yAxisLabel: this.options.labels[ seriesindex ]
 			},
 			series: series
 		};
