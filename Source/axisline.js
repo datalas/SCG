@@ -93,21 +93,47 @@ addKey: function( label ){
 
 
 	/* Now a nice shiny label */
-	key.sample.push( this.paper.text( sampleWidth + 20, parseInt( sampleHeight / 2 ), this.options.labels[ label ] ).attr({'text-anchor': 'start'}) );
+	key.sample.push( this.paper.text( sampleWidth + 10, parseInt( sampleHeight / 2 ), this.options.labels[ label ] ).attr({'text-anchor': 'start'}) );
 
-	/* if we have a previous sample, move to the left of it */
-	var position = this.options.width - this.options.gutter.right;
+	/* we need to arrange the keys in a peculiar order to how we were given them */
+	/* this is because the left hand axis should be to the left, the right hand */
+	/* axis should be to the right */
 
-	if ( this._keys.length > 0 ){
-		position = this._keys[ this._keys.length - 1 ].sample.getBBox().x;
-	}
+	/* we know that our first key will be on the left, our second key on the right   */
+	/* our third key on the left and so on, ergo if we have *no* keys or an even     */
+	/* number of them already, we should put them on the left, odd numbers (already) */
+	/* go on the right */
 
 	/* store our new key */
-	this._keys.push( key );
+	if ( nextLength % 2 ){
+		this._keys.unshift( key );
+	} else {
+		this._keys.push( key );
+	}
+
 	key.sample.forEach( (function(k){ this._keySet.push( k ); }).bind(this) );
 	this._keySet.push( key.axisLine );
 
-	key.sample.transform( [ 'T', position - (key.sample.getBBox().width + 15), 10 ] );
+	/* we now need to rearrange our keys so that they are visually in the right */
+	/* place */
+
+	/* we need to start them at the right hand border edge and then offset them */
+	var position = this.options.width - this.options.gutter.right;
+
+	/* in reverse order, place the keys into their position */
+	this._keys.reverse().each( function( lkey ){
+		/* reset any current transformations */
+		lkey.sample.transform( "" );
+
+		/* modify the position to the left hand margin */
+		position -= lkey.sample.getBBox().width;
+
+		/* move the sample */
+		lkey.sample.transform( [ 'T', position, 10 ] );
+
+		/* now add a margin between the boxes */
+		position -= 15;
+	}, this );
 },
 redraw: function(){
 	/* check whether we need to adjust the scale of our graph */

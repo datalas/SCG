@@ -206,6 +206,15 @@ createKey: function(){
 		this._keySet.remove();
 		this._keySet.clear();
 	}
+
+	/* make sure we clear out any visual elements */
+	if ( this._keys.length ){
+		this._keys.each( function( key ){
+			if ( key.remove ){
+				key.remove();
+			}
+		}, this );
+	}
 	this._keys = [];
 
 	if ( this.stacked || this.multi ){
