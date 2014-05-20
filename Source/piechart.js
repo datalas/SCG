@@ -40,13 +40,18 @@ drawPie: function(){
 	var cx = this.options.gutter.left + radius;
 	var cy = this.options.gutter.top + radius;
 
+	/* pie charts are a different width to normal charts, calculate the new width */
+	this.options.width = this.options.gutter.left + ( 2 * radius ) + this.options.gutter.right;
+
 	this.shader = this.paper.circle( cx, cy, radius - 1 ).attr({ fill: 'r(0.5,0.5)rgba(255,255,255,1)-rgba(0,0,0,.3)' });
 
 	/* so, this will be X pixels high, ergo we need to start it at the mid point */
 	var keyHeight = this.options.data.length * 20;
 	this.labelY = Math.max( cy - ( keyHeight / 2 ) + 10, this.options.gutter.top );
-	this.labelX = cx + radius + 50;
+	this.labelX = 0;//cx + radius + 50;
 	var keyWidth = 0;
+
+	this.createKey();
 
 	var covers = this.paper.set();
 	
@@ -56,7 +61,7 @@ drawPie: function(){
 		var sectorCover = this.sector( cx, cy, radius, starting_angle, starting_angle + angle, { 'fill': this.colours[ index ], 'opacity': 0.0 } );
 		covers.push( sectorCover );
 
-		var key = this.addKey( index );
+		var key = this._keys[ index ];
 		var ms = 500;
 		var percentage = parseInt((slice/total) * 100);
 		if ( percentage == 0 ){
@@ -94,6 +99,8 @@ drawPie: function(){
 		}
 		starting_angle += angle;
 	}, this );
+
+	this.drawKey();
 
 	covers.toFront();
 },
