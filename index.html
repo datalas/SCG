@@ -15,9 +15,12 @@
 	<script src="Source/heatradar.js" tpe="text/javascript"></script>
 	<script src="Source/piearc.js" tpe="text/javascript"></script>
 	<script src="Source/radar.js" tpe="text/javascript"></script>
+	<script src="Source/treemap.js" tpe="text/javascript"></script>
 	<title>Testy</title>
 </head>
 <body>
+	<h3>TreeMap</h3>
+	<div id='testtree'></div>
 	<h3>Standard Line Chart</h3>
 	<div id='test'></div>
 	<h3>Multi Line - Line Chart</h3>
@@ -56,6 +59,16 @@ window.addEvent( 'domready', function(){
 		key: true
 	}); 
 
+	new SCGTreeMap( 'testtree', {
+		height: 400,
+		width: 400,
+		//data: [ 10, 20, 30, 14 ],//, 19, 47, 139, 233, 123,123,34,2,6,77, 1,123,3,12,7,34,9 ],
+		data: [ 30, 20, 20, 10, 5, 5, 19, 47, 139, 233, 123,123,34,2,6,77, 1,123,3,12,7,34,9 ],
+
+		labels: [ 'label1', 'label2', 'label3', 'label4', 'label5', 'label6', 'label7', 'label8', 'label9', 'label10', 'label11', 'label12', 'label13', 'label14', 'label15', 'label16', 'label17', 'label18' ],
+	});
+
+
 	new SCGBarchart( 'test2', {
 		yaxis: 'thingies',
 		data: [ 10, 20, 30, 14, 19, 47, 139, 233, 123,123,34,2,6,77, 1,123,3,12,7,34,9 ],
@@ -86,6 +99,7 @@ window.addEvent( 'domready', function(){
 	new SCGAxisLine( 'test12', {
 		data: tonOData,
 		labels: [ 'label1', 'label2', 'label3', 'label4' ],
+		yaxis: 'thingies',
 		xaxis: xaxisLabels,
 		type: 'block',
 		points: false,
