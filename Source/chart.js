@@ -357,11 +357,11 @@ setRange: function()
 	if ( this.y ){
 		/* we already have a range, has it changed any ? */
 		if ( 
-			this.y.max != range.ymax 
+			this.y.max != range.max 
 			|| 
 			this.y.points != range.points
 			||
-			this.y.min != range.ymin
+			this.y.min != range.min
 			||
 			this.y.npoints != range.npoints
 			||
