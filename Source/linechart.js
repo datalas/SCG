@@ -108,7 +108,9 @@ redrawAxis: function(){
 	});
 
 	this.drawBackground();
-	this.drawKey();
+	if ( this.options.key ){
+		this.drawKey();
+	}
 },
 
 stop: function(){
