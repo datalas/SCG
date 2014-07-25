@@ -266,7 +266,9 @@ addKey: function( label ){
 			/* this label is not going to fit on the screen, not at the bottom anyhow */
 			/* so we need to move it */
 			this.labelY = this.keys.y;
-			this.labelX = Math.max( this.keys.columns[ this.keys.column ].map( function(i){ return i.width; } ).max() );
+
+			/* we need to know the sum of the maximum width of each column */
+			this.labelX = this.keys.columns.map( function(c){ return c.map( function(i){ return i.width; } ).max() } ).sum();
 
 			this.keys.column ++;
 			this.keys.columns[ this.keys.column ] = [];

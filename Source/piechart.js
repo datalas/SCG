@@ -51,8 +51,6 @@ drawPie: function(){
 	this.labelX = 0;//cx + radius + 50;
 	var keyWidth = 0;
 
-	this.createKey();
-
 	var covers = this.paper.set();
 	
 	this.options.data.each( function( slice, index ){ 
