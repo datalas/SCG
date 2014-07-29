@@ -148,13 +148,11 @@ drawAverage: function(){
 drawPoints: function(){
 	this._lines = [];
 	if ( this.stacked || this.multi ){
-		this.options.key = true;
 		/* we need to redraw our lines */
 		this.options.data[0].each( function( first_line, column ){
 			var lineData = this.options.data.map( function(c){ return c[column]; } );
 			var line = this.chartLine( lineData, column );
 			this._lines.push( this.drawLine( line, column ) );
-//			this.addKey( column );
 		}, this );
 
 	} else {
