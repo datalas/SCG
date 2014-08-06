@@ -105,8 +105,8 @@ options: {
 	/* key options */
 	key: true,		/* Display a key ? */
 	keyHeight: 20,
-	hover: function( dataPoint, label, index ){}, /* hovering over a key will do this */
-	click: function( dataPoint, label, index ){}, /* clicking on a key entry will do this */
+//	hover: function( dataPoint, label, index ){}, /* hovering over a key will do this */
+//	click: function( dataPoint, label, index ){}, /* clicking on a key entry will do this */
 
 	truncateLabel: function( label ){
 		if ( label.length > 40 ){
@@ -309,32 +309,29 @@ addKey: function( label ){
 			})
 		};
 
-		key.highlight = function(){
+		key.highlight = (function(){
 			key.blob.attr({'fill-opacity': 1 });
 			key.blob.scale(2,2);
 			key.text.attr({'font-size': 14});
-		};
+			this.fireEvent('mouseenter', [ this.options.data[ label ], this.options.labels[ label ], label ] );
+		}).bind( this );
 
-		key.removeHighlight = function(){
+		key.removeHighlight = (function(){
 			key.blob.attr({'fill-opacity': 0.4 });
 			key.blob.scale(0.5,0.5);
 			key.text.attr({'font-size': 12});
-		};
+			this.fireEvent('mouseleave', [ this.options.data[ label ], this.options.labels[ label ], label ] );
+		}).bind(this);
 
 		/* do we have any callback routines for the graphs ? */
-		var hoverCallback = (function(){
-			this.options.hover.call( this, this.options.data[ label ], this.options.labels[ label ], label );
-		}).bind(this);
 
 		var clickCallback = (function(){
 			this.options.click.call( this, this.options.data[ label ], this.options.labels[ label ], label );
 		}).bind(this);
 
 
-		key.text.click( clickCallback );
-		key.blob.click( clickCallback );
-		key.text.hover( hoverCallback );
-		key.blob.hover( hoverCallback );
+		key.text.click( ( function(){ this.fireEvent('click', [this.options.data[ label ], this.options.labels[ label ], label ]); } ).bind(this) );
+		key.blob.click( ( function(){ this.fireEvent('click', [this.options.data[ label ], this.options.labels[ label ], label ]); } ).bind(this) );
 
 		key.width = 30 + key.text.getBBox().width;
 
