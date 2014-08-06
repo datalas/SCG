@@ -101,11 +101,19 @@ options: {
 		grid: '45-#ffffff-#f0f0ff',
 		border: '#f0f0ff'
 	},
+
 	/* key options */
 	key: true,		/* Display a key ? */
 	keyHeight: 20,
-	hover: function( dataPoint, label, index ){},
-	click: function( dataPoint, label, index ){},
+	hover: function( dataPoint, label, index ){}, /* hovering over a key will do this */
+	click: function( dataPoint, label, index ){}, /* clicking on a key entry will do this */
+
+	truncateLabel: function( label ){
+		if ( label.length > 40 ){
+			return label.substr( 0, 37 ) + '...';
+		}
+		return label;
+	},
 
 	fillOpacity: 0.3,
 	min: 0,
@@ -281,13 +289,16 @@ addKey: function( label ){
 			colour = 0;
 		}
 
+		var truncatedLabel = this.options.truncateLabel( this.options.labels[ label ] );
+
 		/* Create the key along with a unified way of highlighting it */
 		var key = {
 			label: this.options.labels[label],
-			text: this.paper.text( this.labelX + 15, this.labelY, this.options.labels[label] ).attr({
+			text: this.paper.text( this.labelX + 15, this.labelY, truncatedLabel ).attr({
 				'text-anchor': 'start',
 				'font-size': 12,
-				'cursor': 'pointer'
+				'cursor': 'pointer',
+				'title': this.options.labels[label]
 			}),
 			blob: this.paper.circle( this.labelX, this.labelY, 5 ).attr({
 				'stroke-width': 1,
