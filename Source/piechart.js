@@ -72,9 +72,10 @@ drawPie: function(){
 			sectorCover.stop().animate({transform: "s1.1 1.1 " + cx + " " + cy}, ms, "elastic");
 			sector.attr({'opacity': 1 });
 			if ( key ){
-				key.blob.attr({'fill-opacity': 1 });
-				key.blob.scale(2,2);
-				key.text.attr({'font-size': 14});
+//				key.blob.attr({'fill-opacity': 1 });
+//				key.blob.scale(2,2);
+				key.highlight();
+//				key.text.attr({'font-size': 14});
 			}
 			sector._percent = this.paper.text( sector.center.x, sector.center.y, percentage ).attr({'fill': '#ffffff', 'font-size': 30}).insertBefore( sectorCover );
 		};
@@ -83,9 +84,10 @@ drawPie: function(){
 			sectorCover.stop().animate({transform: ""}, ms, "elastic");
 			sector.attr({'opacity': 0.6 });
 			if ( key ){
-				key.blob.attr({'fill-opacity': 0.4 });
-				key.blob.scale(0.5,0.5);
-				key.text.attr({'font-size': 12});
+//				key.blob.attr({'fill-opacity': 0.4 });
+//				key.blob.scale(0.5,0.5);
+				key.removeHighlight();
+//				key.text.attr({'font-size': 12});
 			}
 			sector._percent.remove();
 		};

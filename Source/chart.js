@@ -104,6 +104,7 @@ options: {
 	/* key options */
 	key: true,		/* Display a key ? */
 	keyHeight: 20,
+	callback: function( dataPoint, label, index ){},
 
 	fillOpacity: 0.3,
 	min: 0,
@@ -278,11 +279,43 @@ addKey: function( label ){
 		if ( this.options.persistentColour ){
 			colour = 0;
 		}
+
+		/* Create the key along with a unified way of highlighting it */
 		var key = {
 			label: this.options.labels[label],
-			text: this.paper.text( this.labelX + 15, this.labelY, this.options.labels[label] ).attr({'text-anchor': 'start', 'font-size': 12}),
-			blob: this.paper.circle( this.labelX, this.labelY, 5 ).attr({ 'stroke-width': 1, 'stroke': this.colours[colour], 'fill': this.colours[colour], 'fill-opacity': 0.4 })
+			text: this.paper.text( this.labelX + 15, this.labelY, this.options.labels[label] ).attr({
+				'text-anchor': 'start',
+				'font-size': 12,
+				'cursor': 'pointer'
+			}),
+			blob: this.paper.circle( this.labelX, this.labelY, 5 ).attr({
+				'stroke-width': 1,
+				'stroke': this.colours[colour],
+				'fill': this.colours[colour],
+				'fill-opacity': 0.4,
+				'cursor': 'pointer'
+			})
 		};
+
+		key.highlight = function(){
+			key.blob.attr({'fill-opacity': 1 });
+			key.blob.scale(2,2);
+			key.text.attr({'font-size': 14});
+		};
+
+		key.removeHighlight = function(){
+			key.blob.attr({'fill-opacity': 0.4 });
+			key.blob.scale(0.5,0.5);
+			key.text.attr({'font-size': 12});
+		};
+
+		/* do we have any callback routines for the graphs ? */
+		var callback = (function(){
+			this.options.callback.call( this, this.options.data[ label ], this.options.labels[ label ], label );
+		}).bind(this);
+
+		key.text.click( callback );
+		key.blob.click( callback );
 
 		key.width = 30 + key.text.getBBox().width;
 

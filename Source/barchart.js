@@ -66,18 +66,20 @@ drawBar: function( value, x, y, label, colour, alphaColour ){
 
 	var highlight = (function(){ 
 				if( this.label ){
-					this.label.blob.attr({'fill-opacity': 1 });
-					this.label.blob.scale(2,2);
-					this.label.text.attr({'font-size': 14});
+//					this.label.blob.attr({'fill-opacity': 1 });
+//					this.label.blob.scale(2,2);
+//					this.label.text.attr({'font-size': 14});
+					this.label.highlight();
 					this.tt = this.obj.createToolTip( this );	
 				}
 				this.bar.attr({'fill-opacity': 1}); 
 			}).bind( bar );
 	var removeHighlight = (function(){
 				if( this.label ){
-					this.label.blob.attr({'fill-opacity': 0.4 });
-					this.label.blob.scale(0.5,0.5);
-					this.label.text.attr({'font-size': 12});
+//					this.label.blob.attr({'fill-opacity': 0.4 });
+//					this.label.blob.scale(0.5,0.5);
+//					this.label.text.attr({'font-size': 12});
+					this.label.removeHighlight();
 					this.tt.remove();
 				}
 				this.bar.attr({'fill-opacity': 0.4});
