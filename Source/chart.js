@@ -104,7 +104,8 @@ options: {
 	/* key options */
 	key: true,		/* Display a key ? */
 	keyHeight: 20,
-	callback: function( dataPoint, label, index ){},
+	hover: function( dataPoint, label, index ){},
+	click: function( dataPoint, label, index ){},
 
 	fillOpacity: 0.3,
 	min: 0,
@@ -310,12 +311,19 @@ addKey: function( label ){
 		};
 
 		/* do we have any callback routines for the graphs ? */
-		var callback = (function(){
-			this.options.callback.call( this, this.options.data[ label ], this.options.labels[ label ], label );
+		var hoverCallback = (function(){
+			this.options.hover.call( this, this.options.data[ label ], this.options.labels[ label ], label );
 		}).bind(this);
 
-		key.text.click( callback );
-		key.blob.click( callback );
+		var clickCallback = (function(){
+			this.options.click.call( this, this.options.data[ label ], this.options.labels[ label ], label );
+		}).bind(this);
+
+
+		key.text.click( clickCallback );
+		key.blob.click( clickCallback );
+		key.text.hover( hoverCallback );
+		key.blob.hover( hoverCallback );
 
 		key.width = 30 + key.text.getBBox().width;
 
