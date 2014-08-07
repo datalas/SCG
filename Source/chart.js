@@ -526,7 +526,7 @@ getRange: function( data, chart )
 drawBackground: function(){
 	this.paperBackground = {
 		border: this.paper.rect( 0, 0, this.options.width, this.options.height ).attr( { 'stroke': this.options.styles.border, 'stroke-width': 1 } ).toFront(),
-		background: this.paper.rect( 0, 0, this.options.width, this.options.height ).attr( { 'fill': this.options.styles.background, 'stroke-width': 0 } ).toBack(),
+		background: this.paper.rect( 0, 0, this.options.width, this.options.height ).attr( { 'fill': this.options.styles.background, 'stroke-width': 0 } ).toBack()
 	};
 },
 drawAxis: function(){
@@ -954,7 +954,7 @@ markLabel: function( label ){
 			}
 		}, this );
 	}
-},
+}
 
 
 });
