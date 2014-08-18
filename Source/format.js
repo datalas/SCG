@@ -78,3 +78,34 @@ function SCGFormatBytesAxis( min, max, label, store ){
 }
 
 var SCGFormatBytes = [ SCGFormatBytesValue, SCGFormatBytesAxis ];
+
+/* Time differences (in seconds) */
+
+function SCGFormatTimeValue( value, store ){
+	var display = "";
+	var remainder = value;
+
+	var divisors = [
+		{ t: 'y', v: 31536000 }, // Years
+		{ t: 'm', v: 2592000 }, // Months (assuming 31 day months)
+		{ t: 'w', v: 604800 }, // Weeks
+		{ t: 'd', v: 86400 }, // Days
+		{ t: 'h', v: 3600 }, // Hours
+		{ t: 'm', v: 60 }, // Minutes
+	].each( function( d ){
+		var p = parseInt( remainder / d.v );
+		if ( display != 0 || p > 0 ){
+			display += p + d.t;
+		}
+		remainder = remainder % d.v;
+	} );
+
+	return display;
+}
+
+function SCGFormatTimeAxis( min, max, label, store ){
+	return label;
+}
+
+var SCGFormatTime = [ SCGFormatTimeValue, SCGFormatTimeAxis ];
+
